@@ -41,11 +41,11 @@ module ComicInfo
     ].freeze
 
     # Default values from XSD schema
-    DEFAULT_STRING = ''
+    DEFAULT_STRING = ''.freeze
     DEFAULT_INTEGER = -1
-    DEFAULT_ENUM_UNKNOWN = 'Unknown'
+    DEFAULT_ENUM_UNKNOWN = 'Unknown'.freeze
     DEFAULT_PAGE_COUNT = 0
-    DEFAULT_PAGE_TYPE = 'Story'
+    DEFAULT_PAGE_TYPE = 'Story'.freeze
     DEFAULT_DOUBLE_PAGE = false
     DEFAULT_IMAGE_SIZE = 0
 

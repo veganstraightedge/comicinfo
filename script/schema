@@ -6,7 +6,7 @@ require 'fileutils'
 # Schema download script for ComicInfo XSD files
 # Downloads schema files from the upstream ComicInfo repository
 class SchemaDownloader
-  BASE_URL = 'https://raw.githubusercontent.com/anansi-project/comicinfo'
+  BASE_URL = 'https://raw.githubusercontent.com/anansi-project/comicinfo'.freeze
   SCHEMAS = {
     '1.0'       => {
       branch: 'main',
