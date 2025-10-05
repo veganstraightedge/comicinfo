@@ -3,6 +3,7 @@
 require 'nokogiri'
 require 'date'
 require 'json'
+require 'yaml'
 require_relative 'enums'
 require_relative 'errors'
 require_relative 'page'
@@ -171,6 +172,11 @@ module ComicInfo
     # Convert to JSON representation
     def to_json(*)
       to_h.to_json(*)
+    end
+
+    # Convert to YAML representation
+    def to_yaml(*)
+      to_h.to_yaml(*)
     end
 
     # Convert to hash representation for JSON serialization

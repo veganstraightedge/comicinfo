@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'yaml'
 
 RSpec.describe ComicInfo::Issue do
   describe '.load' do
@@ -608,6 +609,49 @@ RSpec.describe ComicInfo::Issue do
         expect(hash[:characters]).to be_an(Array)
         expect(hash[:genre]).to be_a(String)
         expect(hash[:genres]).to be_an(Array)
+      end
+    end
+
+    describe '#to_yaml' do
+      it 'returns valid YAML string' do
+        yaml_string = complete_comic.to_yaml
+        expect(yaml_string).to be_a(String)
+
+        # Verify it's valid YAML by parsing it back
+        parsed = YAML.safe_load(yaml_string, permitted_classes: [Symbol])
+        expect(parsed).to be_a(Hash)
+      end
+
+      it 'includes all expected fields' do
+        yaml_string = complete_comic.to_yaml
+        parsed = YAML.safe_load(yaml_string, permitted_classes: [Symbol])
+
+        # Test basic fields
+        expect(parsed[:title]).to eq('The Amazing Spider-Man')
+        expect(parsed[:series]).to eq('The Amazing Spider-Man')
+        expect(parsed[:count]).to eq(600)
+        expect(parsed[:volume]).to eq(3)
+        expect(parsed[:community_rating]).to eq(4.25)
+
+        # Test both singular and plural forms of multi-value fields
+        expect(parsed[:character]).to eq('Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May')
+        expect(parsed[:characters]).to eq(['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May'])
+        expect(parsed[:genres]).to eq(%w[Superhero Action Adventure])
+
+        # Test pages array
+        expect(parsed[:pages]).to be_an(Array)
+        expect(parsed[:pages].first).to have_key(:image)
+        expect(parsed[:pages].first).to have_key(:type)
+      end
+
+      it 'produces human-readable YAML format' do
+        yaml_string = complete_comic.to_yaml
+
+        # YAML should contain human-readable field names
+        expect(yaml_string).to include('title:')
+        expect(yaml_string).to include('series:')
+        expect(yaml_string).to include('characters:')
+        expect(yaml_string).to include('- Spider-Man')
       end
     end
   end
