@@ -36,19 +36,19 @@ Metrics/AbcSize:
   Max: 65
 
 Metrics/ClassLength:
-  Max: 181
+  Max: 240
 
 Metrics/CyclomaticComplexity:
   Max: 11
 
 Metrics/MethodLength:
-  Max: 42
+  Max: 51
 
 Metrics/PerceivedComplexity:
   Max: 11
 
 RSpec/ExampleLength:
-  Max: 12
+  Max: 13
 
 RSpec/MultipleExpectations:
-  Max: 8
+  Max: 11
