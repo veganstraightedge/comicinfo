@@ -88,7 +88,7 @@ class SchemaDownloader
 end
 
 # Run the downloader
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
   begin
     downloader = SchemaDownloader.new
     downloader.download_all
