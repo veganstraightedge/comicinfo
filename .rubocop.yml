@@ -1,8 +1,30 @@
+plugins:
+  - rubocop-performance
+  - rubocop-rake
+  - rubocop-rspec
+
 AllCops:
-  TargetRubyVersion: 3.2
+  NewCops: enable
 
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
+Layout/HashAlignment:
+  EnforcedHashRocketStyle: table
+  EnforcedColonStyle: table
 
-Style/StringLiteralsInInterpolation:
-  EnforcedStyle: double_quotes
+Naming/VariableNumber:
+  EnforcedStyle: snake_case
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/MethodDefParentheses:
+  EnforcedStyle: require_no_parentheses
+
+Style/MixinUsage:
+  Exclude:
+    - "script/*"
