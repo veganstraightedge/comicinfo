@@ -8,29 +8,29 @@ RSpec.describe ComicInfo do
       it 'loads a minimal ComicInfo.xml file' do
         comic = load_fixture('valid_minimal.xml')
 
-        expect(comic).to be_a(ComicInfo::Issue)
-        expect(comic.title).to eq('Minimal Comic')
-        expect(comic.series).to eq('Test Series')
-        expect(comic.number).to eq('1')
+        expect(comic).to be_a ComicInfo::Issue
+        expect(comic.title).to eq 'Minimal Comic'
+        expect(comic.series).to eq 'Test Series'
+        expect(comic.number).to eq '1'
       end
 
       it 'loads a complete ComicInfo.xml file with all fields' do
         comic = load_fixture('valid_complete.xml')
 
-        expect(comic).to be_a(ComicInfo::Issue)
-        expect(comic.title).to eq('The Amazing Spider-Man')
-        expect(comic.series).to eq('The Amazing Spider-Man')
-        expect(comic.number).to eq('1')
-        expect(comic.count).to eq(600)
-        expect(comic.volume).to eq(3)
-        expect(comic.pages).to be_an(Array)
+        expect(comic).to be_a ComicInfo::Issue
+        expect(comic.title).to eq 'The Amazing Spider-Man'
+        expect(comic.series).to eq 'The Amazing Spider-Man'
+        expect(comic.number).to eq '1'
+        expect(comic.count).to eq 600
+        expect(comic.volume).to eq 3
+        expect(comic.pages).to be_an Array
         expect(comic.pages.length).to eq(12)
       end
 
       it 'raises an error when file does not exist' do
         expect do
-          described_class.load('nonexistent.xml')
-        end.to raise_error(ComicInfo::Errors::FileError)
+          described_class.load 'non_existent_file.xml'
+        end.to raise_error ComicInfo::Errors::FileError
       end
 
       it 'raises an error when file contains invalid XML' do
@@ -44,37 +44,37 @@ RSpec.describe ComicInfo do
     context 'with XML string content' do
       it 'loads from XML string' do
         xml_content = fixture_file('valid_minimal.xml')
-        comic = described_class.load(xml_content)
+        comic = described_class.load xml_content
 
-        expect(comic).to be_a(ComicInfo::Issue)
-        expect(comic.title).to eq('Minimal Comic')
+        expect(comic).to be_a ComicInfo::Issue
+        expect(comic.title).to eq 'Minimal Comic'
       end
 
       it 'raises an error with malformed XML string' do
-        malformed_xml = '<ComicInfo><Title>Test</ComicInfo>'
+        malformed_xml = '<ComicInfo><Title>Test</Title>'
         expect do
-          described_class.load(malformed_xml)
-        end.to raise_error(ComicInfo::Errors::ParseError)
+          described_class.load malformed_xml
+        end.to raise_error ComicInfo::Errors::ParseError
       end
 
       it 'handles empty XML string' do
         expect do
-          described_class.load('')
-        end.to raise_error(ComicInfo::Errors::ParseError)
+          described_class.load ''
+        end.to raise_error ComicInfo::Errors::ParseError
       end
     end
 
     context 'with nil or invalid input' do
       it 'raises an error with nil input' do
         expect do
-          described_class.load(nil)
-        end.to raise_error(ComicInfo::Errors::ParseError)
+          described_class.load nil
+        end.to raise_error ComicInfo::Errors::ParseError
       end
 
       it 'raises an error with non-string, non-file input' do
         expect do
-          described_class.load(123)
-        end.to raise_error(ComicInfo::Errors::ParseError)
+          described_class.load 123
+        end.to raise_error ComicInfo::Errors::ParseError
       end
     end
   end
@@ -84,10 +84,10 @@ RSpec.describe ComicInfo do
       file_path = File.join(__dir__, 'fixtures', 'valid_minimal.xml')
       allow(ComicInfo::Issue).to receive(:load).and_call_original
 
-      comic = described_class.load(file_path)
+      comic = described_class.load file_path
 
-      expect(comic).to be_a(ComicInfo::Issue)
-      expect(ComicInfo::Issue).to have_received(:load).with(file_path)
+      expect(comic).to be_a ComicInfo::Issue
+      expect(ComicInfo::Issue).to have_received(:load).with file_path
     end
   end
 

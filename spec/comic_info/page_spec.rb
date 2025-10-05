@@ -1,169 +1,179 @@
 RSpec.describe ComicInfo::Page do
   describe '#initialize' do
     it 'creates a page with required Image attribute' do
-      page = described_class.new('Image' => '0', 'Type' => 'Story')
-      expect(page.image).to eq(0)
-      expect(page.type).to eq('Story')
+      page = described_class.new 'Image' => '0', 'Type' => 'Story'
+
+      expect(page.image).to be_zero
+      expect(page.type).to  eq 'Story'
     end
 
     it 'raises error when Image attribute is missing' do
       expect do
-        described_class.new('Type' => 'Story')
-      end.to raise_error(ComicInfo::Errors::SchemaError, 'Image attribute is required for Page')
+        described_class.new 'Type' => 'Story'
+      end.to raise_error ComicInfo::Errors::SchemaError, 'Image attribute is required for Page'
     end
 
     it 'raises error when Image attribute is invalid' do
       expect do
-        described_class.new('Image' => 'invalid', 'Type' => 'Story')
-      end.to raise_error(ComicInfo::Errors::TypeCoercionError)
+        described_class.new 'Image' => 'invalid', 'Type' => 'Story'
+      end.to raise_error ComicInfo::Errors::TypeCoercionError
     end
 
     it 'sets default values for optional attributes' do
-      page = described_class.new('Image' => '5')
-      expect(page.type).to eq('Story')
-      expect(page.double_page).to be false
-      expect(page.image_size).to eq(0)
-      expect(page.key).to eq('')
-      expect(page.bookmark).to eq('')
-      expect(page.image_width).to eq(-1)
+      page = described_class.new 'Image' => '5'
+
+      expect(page.type).to         eq 'Story'
+      expect(page.double_page).to  be false
+      expect(page.image_size).to   eq 0
+      expect(page.key).to          eq ''
+      expect(page.bookmark).to     eq ''
+      expect(page.image_width).to  eq(-1)
       expect(page.image_height).to eq(-1)
     end
 
     it 'accepts symbol keys for attributes' do
-      page = described_class.new(image: '3', type: 'FrontCover', double_page: 'true')
-      expect(page.image).to eq(3)
-      expect(page.type).to eq('FrontCover')
+      page = described_class.new image: '3', type: 'FrontCover', double_page: 'true'
+
+      expect(page.image).to eq 3
+      expect(page.type).to  eq 'FrontCover'
       expect(page.double_page).to be true
     end
 
     it 'handles boolean conversion for DoublePage' do
-      true_page = described_class.new('Image' => '1', 'DoublePage' => 'true')
-      false_page = described_class.new('Image' => '2', 'DoublePage' => 'false')
-      one_page = described_class.new('Image' => '3', 'DoublePage' => '1')
-      zero_page = described_class.new('Image' => '4', 'DoublePage' => '0')
+      true_page  = described_class.new 'Image' => '1', 'DoublePage' => 'true'
+      false_page = described_class.new 'Image' => '2', 'DoublePage' => 'false'
+      one_page   = described_class.new 'Image' => '3', 'DoublePage' => '1'
+      zero_page  = described_class.new 'Image' => '4', 'DoublePage' => '0'
 
-      expect(true_page.double_page).to be true
+      expect(true_page.double_page).to  be true
       expect(false_page.double_page).to be false
-      expect(one_page.double_page).to be true
-      expect(zero_page.double_page).to be false
+      expect(one_page.double_page).to   be true
+      expect(zero_page.double_page).to  be false
     end
 
     it 'raises error for invalid boolean values' do
       expect do
-        described_class.new('Image' => '1', 'DoublePage' => 'maybe')
-      end.to raise_error(ComicInfo::Errors::TypeCoercionError)
+        described_class.new 'Image' => '1', 'DoublePage' => 'maybe'
+      end.to raise_error ComicInfo::Errors::TypeCoercionError
     end
   end
 
   describe 'page type predicates' do
     describe '#cover?' do
       it 'returns true for cover page types' do
-        front_cover = described_class.new('Image' => '0', 'Type' => 'FrontCover')
-        back_cover = described_class.new('Image' => '1', 'Type' => 'BackCover')
-        inner_cover = described_class.new('Image' => '2', 'Type' => 'InnerCover')
+        front_cover = described_class.new 'Image' => '0', 'Type' => 'FrontCover'
+        back_cover  = described_class.new 'Image' => '1', 'Type' => 'BackCover'
+        inner_cover = described_class.new 'Image' => '2', 'Type' => 'InnerCover'
 
         expect(front_cover.cover?).to be true
-        expect(back_cover.cover?).to be true
+        expect(back_cover.cover?).to  be true
         expect(inner_cover.cover?).to be true
       end
 
       it 'returns false for non-cover page types' do
-        story_page = described_class.new('Image' => '3', 'Type' => 'Story')
-        ad_page = described_class.new('Image' => '4', 'Type' => 'Advertisement')
+        story_page   = described_class.new('Image' => '3', 'Type' => 'Story')
+        ad_page      = described_class.new('Image' => '4', 'Type' => 'Advertisement')
         deleted_page = described_class.new('Image' => '5', 'Type' => 'Deleted')
 
-        expect(story_page.cover?).to be false
-        expect(ad_page.cover?).to be false
+        expect(story_page.cover?).to   be false
+        expect(ad_page.cover?).to      be false
         expect(deleted_page.cover?).to be false
       end
     end
 
     describe '#story?' do
       it 'returns true for story pages' do
-        story_page = described_class.new('Image' => '3', 'Type' => 'Story')
+        story_page = described_class.new 'Image' => '3', 'Type' => 'Story'
         expect(story_page.story?).to be true
       end
 
       it 'returns false for non-story pages' do
-        front_cover = described_class.new('Image' => '0', 'Type' => 'FrontCover')
-        ad_page = described_class.new('Image' => '4', 'Type' => 'Advertisement')
-        deleted_page = described_class.new('Image' => '5', 'Type' => 'Deleted')
+        front_cover  = described_class.new 'Image' => '0', 'Type' => 'FrontCover'
+        ad_page      = described_class.new 'Image' => '4', 'Type' => 'Advertisement'
+        deleted_page = described_class.new 'Image' => '5', 'Type' => 'Deleted'
 
-        expect(front_cover.story?).to be false
-        expect(ad_page.story?).to be false
+        expect(front_cover.story?).to  be false
+        expect(ad_page.story?).to      be false
         expect(deleted_page.story?).to be false
       end
     end
 
     describe '#deleted?' do
       it 'returns true for deleted pages' do
-        deleted_page = described_class.new('Image' => '5', 'Type' => 'Deleted')
+        deleted_page = described_class.new 'Image' => '5', 'Type' => 'Deleted'
+
         expect(deleted_page.deleted?).to be true
       end
 
       it 'returns false for non-deleted pages' do
-        front_cover = described_class.new('Image' => '0', 'Type' => 'FrontCover')
-        story_page = described_class.new('Image' => '3', 'Type' => 'Story')
-        ad_page = described_class.new('Image' => '4', 'Type' => 'Advertisement')
+        front_cover = described_class.new 'Image' => '0', 'Type' => 'FrontCover'
+        story_page  = described_class.new 'Image' => '3', 'Type' => 'Story'
+        ad_page     = described_class.new 'Image' => '4', 'Type' => 'Advertisement'
 
         expect(front_cover.deleted?).to be false
-        expect(story_page.deleted?).to be false
-        expect(ad_page.deleted?).to be false
+        expect(story_page.deleted?).to  be false
+        expect(ad_page.deleted?).to     be false
       end
     end
   end
 
   describe '#double_page?' do
     it 'returns true when double_page is true' do
-      page = described_class.new('Image' => '1', 'DoublePage' => 'true')
+      page = described_class.new 'Image' => '1', 'DoublePage' => 'true'
+
       expect(page.double_page?).to be true
     end
 
     it 'returns false when double_page is false' do
-      page = described_class.new('Image' => '1', 'DoublePage' => 'false')
+      page = described_class.new 'Image' => '1', 'DoublePage' => 'false'
+
       expect(page.double_page?).to be false
     end
   end
 
   describe '#types' do
     it 'returns single type as array' do
-      page = described_class.new('Image' => '1', 'Type' => 'Story')
-      expect(page.types).to eq(['Story'])
+      page = described_class.new 'Image' => '1', 'Type' => 'Story'
+
+      expect(page.types).to eq ['Story']
     end
 
     it 'handles space-separated multiple types' do
-      page = described_class.new('Image' => '1', 'Type' => 'Story Advertisement')
-      expect(page.types).to eq(%w[Story Advertisement])
+      page = described_class.new 'Image' => '1', 'Type' => 'Story Advertisement'
+
+      expect(page.types).to eq %w[Story Advertisement]
     end
 
     it 'handles tabs and multiple spaces' do
-      page = described_class.new('Image' => '1', 'Type' => 'Story  Advertisement	Editorial')
-      expect(page.types).to eq(%w[Story Advertisement Editorial])
+      page = described_class.new 'Image' => '1', 'Type' => 'Story  Advertisement	Editorial'
+
+      expect(page.types).to eq %w[Story Advertisement Editorial]
     end
   end
 
   describe '#include_type?' do
-    let(:page) { described_class.new('Image' => '1', 'Type' => 'Story Advertisement') }
+    let(:page) { described_class.new 'Image' => '1', 'Type' => 'Story Advertisement' }
 
     it 'returns true when page has the specified type' do
-      expect(page.include_type?('Story')).to be true
+      expect(page.include_type?('Story')).to         be true
       expect(page.include_type?('Advertisement')).to be true
     end
 
     it 'returns false when page does not have the specified type' do
       expect(page.include_type?('FrontCover')).to be false
-      expect(page.include_type?('Editorial')).to be false
+      expect(page.include_type?('Editorial')).to  be false
     end
   end
 
   describe '#dimensions' do
     it 'returns hash with width and height when available' do
-      page = described_class.new('Image' => '1', 'ImageWidth' => '1600', 'ImageHeight' => '2400')
-      expect(page.dimensions).to eq(width: 1600, height: 2400)
+      page = described_class.new 'Image' => '1', 'ImageWidth' => '1600', 'ImageHeight' => '2400'
+
+      expect(page.dimensions).to eq width: 1600, height: 2400
     end
 
     it 'returns nil values when dimensions are not set' do
-      page = described_class.new('Image' => '1')
+      page = described_class.new 'Image' => '1'
       expect(page.dimensions).to eq(width: nil, height: nil)
     end
 
