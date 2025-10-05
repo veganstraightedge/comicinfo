@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Pages**: Complete page object model with type predicates and attributes
 - **Multi-value**: Smart handling of comma/space-separated field values
 
-## [0.1.0] - 2025-01-XX
+## [0.1.0] - 2025-10-05
 
 ### Added
 - Initial project structure
