@@ -17,12 +17,6 @@ Naming/PredicatePrefix:
     - spec/**/*
     - lib/comicinfo/page_info.rb
 
-# Offense count: 1
-# Configuration parameters: .
-# SupportedStyles: have_received, receive
-RSpec/MessageSpies:
-  EnforcedStyle: receive
-
 # Offense count: 2
 # Configuration parameters: CustomTransform, IgnoreMethods, IgnoreMetadata.
 RSpec/SpecFilePathFormat:
