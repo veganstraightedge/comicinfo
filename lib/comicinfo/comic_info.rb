@@ -34,33 +34,40 @@ module ComicInfo
     def self.load file_path_or_xml_string
       raise Errors::ParseError, 'Input cannot be nil' if file_path_or_xml_string.nil?
 
-      # Convert to string to handle various input types
       input = file_path_or_xml_string.to_s
-
-      # Empty string should be treated as XML content, not a file path
       return new(input) if input.empty?
 
-      # Check if input looks like XML content (starts with '<' or whitespace + '<')
-      if input.strip.start_with?('<')
-        xml_content = input
+      if looks_like_xml?(input)
+        new(input)
       else
-        # Check if the input could reasonably be a file path
-        # Reject purely numeric strings or strings that don't look like file paths
-        if input.match?(/^\d+$/) || (!input.include?('.') && !input.include?('/') && !input.include?('\\'))
-          raise Errors::ParseError, "Input '#{input}' does not appear to be valid XML or a file path"
-        end
-
-        # This looks like a file path
-        raise Errors::FileError, "File does not exist: '#{input}'" unless File.exist?(input)
-
-        begin
-          xml_content = File.read(input)
-        rescue StandardError => e
-          raise Errors::FileError, "Failed to read file '#{input}': #{e.message}"
-        end
+        load_from_file(input)
       end
+    end
 
-      new(xml_content)
+    private_class_method def self.looks_like_xml? input
+      input.strip.start_with?('<')
+    end
+
+    private_class_method def self.load_from_file input
+      validate_file_path(input)
+      raise Errors::FileError, "File does not exist: '#{input}'" unless File.exist?(input)
+
+      begin
+        xml_content = File.read(input)
+        new(xml_content)
+      rescue Errors::ParseError
+        # Re-raise parse errors from XML parsing
+        raise
+      rescue StandardError => e
+        raise Errors::FileError, "Failed to read file '#{input}': #{e.message}"
+      end
+    end
+
+    private_class_method def self.validate_file_path input
+      return unless input.match?(/^\d+$/) ||
+                    (!input.include?('.') && !input.include?('/') && !input.include?('\\'))
+
+      raise Errors::ParseError, "Input '#{input}' does not appear to be valid XML or a file path"
     end
 
     # Initialize from XML string
@@ -96,20 +103,20 @@ module ComicInfo
       Enums::Helpers.yes_value?(@black_and_white)
     end
 
-    def has_pages?
+    def pages?
       @pages && !@pages.empty?
     end
 
     # Get only cover pages
     def cover_pages
-      return [] unless has_pages?
+      return [] unless pages?
 
       @pages.select(&:cover?)
     end
 
     # Get only story pages
     def story_pages
-      return [] unless has_pages?
+      return [] unless pages?
 
       @pages.select(&:story?)
     end
@@ -234,7 +241,7 @@ module ComicInfo
 
     def get_field_text field_name
       element = @root.at_xpath(field_name)
-      element ? element.text : nil
+      element&.text
     end
 
     def parse_pages

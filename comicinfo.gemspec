@@ -38,8 +38,4 @@ Gem::Specification.new do |spec|
 
   # Runtime dependencies
   spec.add_dependency 'nokogiri', '>= 1.18.10'
-
-  # Development dependencies
-  spec.add_development_dependency 'rspec', '>= 3.13.1'
-  spec.add_development_dependency 'rubocop', '>= 1.81.1'
 end

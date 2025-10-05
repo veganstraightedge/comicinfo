@@ -463,14 +463,14 @@ RSpec.describe ComicInfo::ComicInfo do
       end
     end
 
-    describe '#has_pages?' do
+    describe '#pages?' do
       it 'returns true when pages are present' do
-        expect(complete_comic.has_pages?).to be true
+        expect(complete_comic.pages?).to be true
       end
 
       it 'returns false when no pages are present' do
         minimal_comic = ComicInfo::ComicInfo.load(File.join(__dir__, 'fixtures', 'valid_minimal.xml'))
-        expect(minimal_comic.has_pages?).to be false
+        expect(minimal_comic.pages?).to be false
       end
     end
 
