@@ -5,9 +5,9 @@ RSpec.describe ComicInfo::ComicInfo do
     context 'with valid file path' do
       it 'loads a minimal ComicInfo.xml file' do
         file_path = File.join(__dir__, 'fixtures', 'valid_minimal.xml')
-        comic = ComicInfo::ComicInfo.load(file_path)
+        comic = described_class.load(file_path)
 
-        expect(comic).to be_a(ComicInfo::ComicInfo)
+        expect(comic).to be_a(described_class)
         expect(comic.title).to eq('Minimal Comic')
         expect(comic.series).to eq('Test Series')
         expect(comic.number).to eq('1')
@@ -15,9 +15,9 @@ RSpec.describe ComicInfo::ComicInfo do
 
       it 'loads a complete ComicInfo.xml file' do
         file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-        comic = ComicInfo::ComicInfo.load(file_path)
+        comic = described_class.load(file_path)
 
-        expect(comic).to be_a(ComicInfo::ComicInfo)
+        expect(comic).to be_a(described_class)
         expect(comic.title).to eq('The Amazing Spider-Man')
         expect(comic.series).to eq('The Amazing Spider-Man')
         expect(comic.count).to eq(600)
@@ -27,7 +27,7 @@ RSpec.describe ComicInfo::ComicInfo do
 
       it "raises FileError when file doesn't exist" do
         expect do
-          ComicInfo::ComicInfo.load('nonexistent.xml')
+          described_class.load('nonexistent.xml')
         end.to raise_error(ComicInfo::Errors::FileError)
       end
     end
@@ -35,16 +35,16 @@ RSpec.describe ComicInfo::ComicInfo do
     context 'with XML string' do
       it 'loads from XML string content' do
         xml_content = File.read(File.join(__dir__, 'fixtures', 'valid_minimal.xml'))
-        comic = ComicInfo::ComicInfo.load(xml_content)
+        comic = described_class.load(xml_content)
 
-        expect(comic).to be_a(ComicInfo::ComicInfo)
+        expect(comic).to be_a(described_class)
         expect(comic.title).to eq('Minimal Comic')
       end
 
       it 'raises ParseError with malformed XML' do
         malformed_xml = '<ComicInfo><Title>Test</ComicInfo>'
         expect do
-          ComicInfo::ComicInfo.load(malformed_xml)
+          described_class.load(malformed_xml)
         end.to raise_error(ComicInfo::Errors::ParseError)
       end
     end
@@ -53,15 +53,15 @@ RSpec.describe ComicInfo::ComicInfo do
   describe '.new' do
     it 'creates instance from XML string' do
       xml_content = File.read(File.join(__dir__, 'fixtures', 'valid_minimal.xml'))
-      comic = ComicInfo::ComicInfo.new(xml_content)
+      comic = described_class.new(xml_content)
 
-      expect(comic).to be_a(ComicInfo::ComicInfo)
+      expect(comic).to be_a(described_class)
       expect(comic.title).to eq('Minimal Comic')
     end
 
     it 'raises ParseError with invalid XML' do
       expect do
-        ComicInfo::ComicInfo.new('<invalid>xml')
+        described_class.new('<invalid>xml')
       end.to raise_error(ComicInfo::Errors::ParseError)
     end
   end
@@ -69,7 +69,7 @@ RSpec.describe ComicInfo::ComicInfo do
   describe 'basic string fields' do
     let(:complete_comic) do
       file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      ComicInfo::ComicInfo.load(file_path)
+      described_class.load(file_path)
     end
 
     it 'returns title' do
@@ -104,7 +104,7 @@ RSpec.describe ComicInfo::ComicInfo do
   describe 'creator fields' do
     let(:complete_comic) do
       file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      ComicInfo::ComicInfo.load(file_path)
+      described_class.load(file_path)
     end
 
     it 'returns writer' do
@@ -143,7 +143,7 @@ RSpec.describe ComicInfo::ComicInfo do
   describe 'publication fields' do
     let(:complete_comic) do
       file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      ComicInfo::ComicInfo.load(file_path)
+      described_class.load(file_path)
     end
 
     it 'returns publisher' do
@@ -174,7 +174,7 @@ RSpec.describe ComicInfo::ComicInfo do
   describe 'integer fields' do
     let(:complete_comic) do
       file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      ComicInfo::ComicInfo.load(file_path)
+      described_class.load(file_path)
     end
 
     it 'returns count as integer' do
@@ -209,7 +209,7 @@ RSpec.describe ComicInfo::ComicInfo do
   describe 'enum fields' do
     let(:complete_comic) do
       file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      ComicInfo::ComicInfo.load(file_path)
+      described_class.load(file_path)
     end
 
     it 'returns black and white enum' do
@@ -233,7 +233,7 @@ RSpec.describe ComicInfo::ComicInfo do
               <BlackAndWhite>Maybe</BlackAndWhite>
             </ComicInfo>
           XML
-          ComicInfo::ComicInfo.new(xml_with_invalid_enum)
+          described_class.new(xml_with_invalid_enum)
         end.to raise_error(ComicInfo::Errors::InvalidEnumError)
       end
     end
@@ -242,7 +242,7 @@ RSpec.describe ComicInfo::ComicInfo do
   describe 'decimal fields' do
     let(:complete_comic) do
       file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      ComicInfo::ComicInfo.load(file_path)
+      described_class.load(file_path)
     end
 
     it 'returns community rating as float' do
@@ -259,7 +259,7 @@ RSpec.describe ComicInfo::ComicInfo do
               <CommunityRating>6.0</CommunityRating>
             </ComicInfo>
           XML
-          ComicInfo::ComicInfo.new(xml_with_invalid_rating)
+          described_class.new(xml_with_invalid_rating)
         end.to raise_error(ComicInfo::Errors::RangeError)
       end
 
@@ -271,7 +271,7 @@ RSpec.describe ComicInfo::ComicInfo do
               <CommunityRating>-1.0</CommunityRating>
             </ComicInfo>
           XML
-          ComicInfo::ComicInfo.new(xml_with_invalid_rating)
+          described_class.new(xml_with_invalid_rating)
         end.to raise_error(ComicInfo::Errors::RangeError)
       end
     end
@@ -280,7 +280,7 @@ RSpec.describe ComicInfo::ComicInfo do
   describe 'multi-value fields' do
     let(:complete_comic) do
       file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      ComicInfo::ComicInfo.load(file_path)
+      described_class.load(file_path)
     end
 
     it 'returns characters as comma-separated string' do
@@ -307,7 +307,7 @@ RSpec.describe ComicInfo::ComicInfo do
   describe 'pages array' do
     let(:complete_comic) do
       file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      ComicInfo::ComicInfo.load(file_path)
+      described_class.load(file_path)
     end
 
     it 'returns array of ComicPageInfo objects' do
@@ -336,7 +336,7 @@ RSpec.describe ComicInfo::ComicInfo do
   describe 'default values' do
     let(:minimal_comic) do
       file_path = File.join(__dir__, 'fixtures', 'valid_minimal.xml')
-      ComicInfo::ComicInfo.load(file_path)
+      described_class.load(file_path)
     end
 
     it 'returns default integer value for missing fields' do
@@ -362,7 +362,7 @@ RSpec.describe ComicInfo::ComicInfo do
     context 'with empty fields' do
       let(:empty_comic) do
         file_path = File.join(__dir__, 'fixtures', 'edge_cases', 'empty_fields.xml')
-        ComicInfo::ComicInfo.load(file_path)
+        described_class.load(file_path)
       end
 
       it 'handles empty string fields' do
@@ -383,7 +383,7 @@ RSpec.describe ComicInfo::ComicInfo do
     context 'with Unicode and special characters' do
       let(:unicode_comic) do
         file_path = File.join(__dir__, 'fixtures', 'edge_cases', 'unicode_special_chars.xml')
-        ComicInfo::ComicInfo.load(file_path)
+        described_class.load(file_path)
       end
 
       it 'preserves Unicode characters in title' do
@@ -405,7 +405,7 @@ RSpec.describe ComicInfo::ComicInfo do
     context 'with manga properties' do
       let(:manga_comic) do
         file_path = File.join(__dir__, 'fixtures', 'edge_cases', 'manga_rtl.xml')
-        ComicInfo::ComicInfo.load(file_path)
+        described_class.load(file_path)
       end
 
       it 'handles manga reading direction' do
@@ -425,12 +425,12 @@ RSpec.describe ComicInfo::ComicInfo do
   describe 'convenience methods' do
     let(:complete_comic) do
       file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      ComicInfo::ComicInfo.load(file_path)
+      described_class.load(file_path)
     end
 
     let(:manga_comic) do
       file_path = File.join(__dir__, 'fixtures', 'edge_cases', 'manga_rtl.xml')
-      ComicInfo::ComicInfo.load(file_path)
+      described_class.load(file_path)
     end
 
     describe '#manga?' do
@@ -469,7 +469,7 @@ RSpec.describe ComicInfo::ComicInfo do
       end
 
       it 'returns false when no pages are present' do
-        minimal_comic = ComicInfo::ComicInfo.load(File.join(__dir__, 'fixtures', 'valid_minimal.xml'))
+        minimal_comic = described_class.load(File.join(__dir__, 'fixtures', 'valid_minimal.xml'))
         expect(minimal_comic.pages?).to be false
       end
     end
@@ -502,7 +502,7 @@ RSpec.describe ComicInfo::ComicInfo do
             <Day>32</Day>
           </ComicInfo>
         XML
-        ComicInfo::ComicInfo.new(xml_with_invalid_date)
+        described_class.new(xml_with_invalid_date)
       end.to raise_error(ComicInfo::Errors::RangeError)
     end
 
@@ -514,7 +514,7 @@ RSpec.describe ComicInfo::ComicInfo do
             <Count>not_a_number</Count>
           </ComicInfo>
         XML
-        ComicInfo::ComicInfo.new(xml_with_invalid_integer)
+        described_class.new(xml_with_invalid_integer)
       end.to raise_error(ComicInfo::Errors::TypeCoercionError)
     end
   end
@@ -527,7 +527,7 @@ RSpec.describe ComicInfo::ComicInfo do
           <BlackAndWhite>Maybe</BlackAndWhite>
         </ComicInfo>
       XML
-      ComicInfo::ComicInfo.new(xml_with_invalid_enum)
+      described_class.new(xml_with_invalid_enum)
     rescue ComicInfo::Errors::InvalidEnumError => e
       expect(e.field).to eq('BlackAndWhite')
       expect(e.value).to eq('Maybe')
@@ -541,7 +541,7 @@ RSpec.describe ComicInfo::ComicInfo do
           <CommunityRating>10.0</CommunityRating>
         </ComicInfo>
       XML
-      ComicInfo::ComicInfo.new(xml_with_invalid_rating)
+      described_class.new(xml_with_invalid_rating)
     rescue ComicInfo::Errors::RangeError => e
       expect(e.field).to eq('CommunityRating')
       expect(e.value).to eq(10.0)
