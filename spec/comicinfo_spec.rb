@@ -86,10 +86,12 @@ RSpec.describe ComicInfo do
   describe 'convenience method delegation' do
     it 'delegates to ComicInfo::ComicInfo.load' do
       file_path = File.join(__dir__, 'fixtures', 'valid_minimal.xml')
-      expect(ComicInfo::ComicInfo).to receive(:load).with(file_path).and_call_original
+      allow(ComicInfo::ComicInfo).to receive(:load).and_call_original
 
       comic = described_class.load(file_path)
+
       expect(comic).to be_a(ComicInfo::ComicInfo)
+      expect(ComicInfo::ComicInfo).to have_received(:load).with(file_path)
     end
   end
 
