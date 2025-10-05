@@ -4,12 +4,9 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'irb'
-gem 'rake', '~> 13.3'
-
-gem 'nokogiri', '>= 1.18.10'
-gem 'rspec', '>= 3.13.1'
-
-gem 'rubocop', '>= 1.81.1'
+gem 'rake'
+gem 'rspec'
+gem 'rubocop'
 gem 'rubocop-performance'
 gem 'rubocop-rake'
 gem 'rubocop-rspec'

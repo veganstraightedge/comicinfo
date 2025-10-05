@@ -93,10 +93,9 @@ PLATFORMS
 DEPENDENCIES
   comicinfo!
   irb
-  nokogiri (>= 1.18.10)
-  rake (~> 13.3)
-  rspec (>= 3.13.1)
-  rubocop (>= 1.81.1)
+  rake
+  rspec
+  rubocop
   rubocop-performance
   rubocop-rake
   rubocop-rspec
