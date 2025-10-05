@@ -9,7 +9,7 @@ RSpec.describe ComicInfo do
         comic = load_fixture 'valid_minimal.xml'
 
         expect(comic).to be_a ComicInfo::Issue
-        expect(comic.title).to eq 'Minimal Comic'
+        expect(comic.title).to  eq 'Minimal Comic'
         expect(comic.series).to eq 'Test Series'
         expect(comic.number).to eq '1'
       end
@@ -17,14 +17,15 @@ RSpec.describe ComicInfo do
       it 'loads a complete ComicInfo.xml file with all fields' do
         comic = load_fixture 'valid_complete.xml'
 
-        expect(comic).to be_a ComicInfo::Issue
-        expect(comic.title).to eq 'The Amazing Spider-Man'
-        expect(comic.series).to eq 'The Amazing Spider-Man'
-        expect(comic.number).to eq '1'
-        expect(comic.count).to eq 600
-        expect(comic.volume).to eq 3
+        expect(comic).to       be_a ComicInfo::Issue
         expect(comic.pages).to be_an Array
-        expect(comic.pages.length).to eq(12)
+
+        expect(comic.title).to        eq 'The Amazing Spider-Man'
+        expect(comic.series).to       eq 'The Amazing Spider-Man'
+        expect(comic.number).to       eq '1'
+        expect(comic.count).to        eq 600
+        expect(comic.volume).to       eq 3
+        expect(comic.pages.length).to eq 12
       end
 
       it 'raises an error when file does not exist' do
@@ -34,10 +35,9 @@ RSpec.describe ComicInfo do
       end
 
       it 'raises an error when file contains invalid XML' do
-        file_path = File.join(__dir__, 'fixtures', 'invalid_xml.xml')
-        expect do
-          described_class.load file_path
-        end.to raise_error(ComicInfo::Errors::ParseError)
+        file_path = File.join __dir__, 'fixtures', 'invalid_xml.xml'
+
+        expect { described_class.load file_path }.to raise_error ComicInfo::Errors::ParseError
       end
     end
 
@@ -81,7 +81,7 @@ RSpec.describe ComicInfo do
 
   describe 'convenience method delegation' do
     it 'delegates to ComicInfo::Issue.load' do
-      file_path = File.join(__dir__, 'fixtures', 'valid_minimal.xml')
+      file_path = File.join __dir__, 'fixtures', 'valid_minimal.xml'
       allow(ComicInfo::Issue).to receive(:load).and_call_original
 
       comic = described_class.load file_path
@@ -93,9 +93,9 @@ RSpec.describe ComicInfo do
 
   describe 'module structure' do
     it 'defines the correct autoloaded constants' do
-      expect(defined?(ComicInfo::Issue)).to be_truthy
-      expect(defined?(ComicInfo::Page)).to be_truthy
-      expect(defined?(ComicInfo::Enums)).to be_truthy
+      expect(defined?(ComicInfo::Issue)).to  be_truthy
+      expect(defined?(ComicInfo::Page)).to   be_truthy
+      expect(defined?(ComicInfo::Enums)).to  be_truthy
       expect(defined?(ComicInfo::Errors)).to be_truthy
     end
 

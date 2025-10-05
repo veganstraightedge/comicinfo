@@ -23,7 +23,7 @@ class SchemaDownloader
   }.freeze
 
   def initialize
-    @base_dir = File.join(__dir__, '..', 'schemas')
+    @base_dir = File.join __dir__, '..', 'schemas'
   end
 
   def download_all
@@ -40,7 +40,7 @@ class SchemaDownloader
 
   def download_schema version, config
     url = build_url(config[:branch], config[:path])
-    destination = File.join(@base_dir, version, 'ComicInfo.xsd')
+    destination = File.join @base_dir, version, 'ComicInfo.xsd'
 
     puts "📥 Downloading #{version} schema from #{url}"
 

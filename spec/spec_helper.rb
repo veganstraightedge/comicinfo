@@ -5,12 +5,8 @@ module FixtureHelpers
   # Load fixture file content from either spec/fixtures or spec/comic_info/fixtures
   def fixture_file filename
     # Try spec/fixtures first (for top-level specs)
-    main_fixtures_path = File.join(__dir__, 'fixtures', filename)
-    return File.read(main_fixtures_path) if File.exist?(main_fixtures_path)
-
-    # Try spec/comic_info/fixtures (for nested specs)
-    nested_fixtures_path = File.join(__dir__, 'comic_info', 'fixtures', filename)
-    return File.read(nested_fixtures_path) if File.exist?(nested_fixtures_path)
+    main_fixtures_path = File.join __dir__, 'fixtures', filename
+    return File.read(main_fixtures_path) if File.exist? main_fixtures_path
 
     raise "Fixture file not found: #{filename}"
   end
@@ -18,19 +14,15 @@ module FixtureHelpers
   # Get full path to fixture file
   def fixture_path filename
     # Try spec/fixtures first (for top-level specs)
-    main_fixtures_path = File.join(__dir__, 'fixtures', filename)
-    return main_fixtures_path if File.exist?(main_fixtures_path)
-
-    # Try spec/comic_info/fixtures (for nested specs)
-    nested_fixtures_path = File.join(__dir__, 'comic_info', 'fixtures', filename)
-    return nested_fixtures_path if File.exist?(nested_fixtures_path)
+    main_fixtures_path = File.join __dir__, 'fixtures', filename
+    return main_fixtures_path if File.exist? main_fixtures_path
 
     raise "Fixture file not found: #{filename}"
   end
 
   # Load a ComicInfo instance from a fixture file
   def load_fixture filename
-    ComicInfo.load(fixture_file(filename))
+    ComicInfo.load fixture_file filename
   end
 end
 

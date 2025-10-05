@@ -315,7 +315,10 @@ RSpec.describe ComicInfo::Issue do
       end
 
       it 'returns web_urls as array' do
-        expect(complete_comic.web_urls).to eq ['https://marvel.com/comics/issue/12345', 'https://comicvine.gamespot.com/amazing-spider-man-1/4000-67890/']
+        expect(complete_comic.web_urls).to eq [
+          'https://marvel.com/comics/issue/12345',
+          'https://comicvine.gamespot.com/amazing-spider-man-1/4000-67890/'
+        ]
       end
     end
   end
@@ -324,9 +327,9 @@ RSpec.describe ComicInfo::Issue do
     let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
     it 'returns array of ComicPageInfo objects' do
-      expect(complete_comic.pages).to        be_an Array
-      expect(complete_comic.pages.length).to eq(12)
-      expect(complete_comic.pages.first).to  be_a(ComicInfo::Page)
+      expect(complete_comic.pages).to be_an Array
+      expect(complete_comic.pages.length).to eq 12
+      expect(complete_comic.pages.first).to be_a ComicInfo::Page
     end
 
     it 'parses page attributes correctly' do
@@ -334,15 +337,15 @@ RSpec.describe ComicInfo::Issue do
       expect(first_page.image).to        eq 0
       expect(first_page.type).to         eq 'FrontCover'
       expect(first_page.double_page).to  be false
-      expect(first_page.image_size).to   eq(1_024_000)
-      expect(first_page.image_width).to  eq(1600)
-      expect(first_page.image_height).to eq(2400)
+      expect(first_page.image_size).to   eq 1_024_000
+      expect(first_page.image_width).to  eq 1600
+      expect(first_page.image_height).to eq 2400
     end
 
     it 'handles double-page spreads' do
       double_page = complete_comic.pages[3] # Image="3" is marked as DoublePage="true"
       expect(double_page.double_page?).to be true
-      expect(double_page.image_width).to eq(3200) # Double width
+      expect(double_page.image_width).to  eq 3200 # Double width
     end
   end
 
@@ -489,8 +492,8 @@ RSpec.describe ComicInfo::Issue do
     describe '#cover_pages' do
       it 'returns only cover pages' do
         covers = complete_comic.cover_pages
-        expect(covers).to                be_an Array
-        expect(covers.length).to         eq(3) # FrontCover, InnerCover, and BackCover
+        expect(covers).to be_an Array
+        expect(covers.length).to eq 3 # FrontCover, InnerCover, and BackCover
         expect(covers.all?(&:cover?)).to be true
       end
     end
@@ -498,7 +501,7 @@ RSpec.describe ComicInfo::Issue do
     describe '#story_pages' do
       it 'returns only story pages' do
         stories = complete_comic.story_pages
-        expect(stories).to                be_an Array
+        expect(stories).to be_an Array
         expect(stories.all?(&:story?)).to be true
       end
     end
@@ -516,7 +519,7 @@ RSpec.describe ComicInfo::Issue do
 
       expect do
         described_class.new xml_with_invalid_date
-      end.to raise_error(ComicInfo::Errors::RangeError)
+      end.to raise_error ComicInfo::Errors::RangeError
     end
 
     it 'validates integer type coercion' do
@@ -529,7 +532,7 @@ RSpec.describe ComicInfo::Issue do
 
       expect do
         described_class.new xml_with_invalid_count
-      end.to raise_error(ComicInfo::Errors::TypeCoercionError)
+      end.to raise_error ComicInfo::Errors::TypeCoercionError
     end
   end
 
@@ -563,7 +566,7 @@ RSpec.describe ComicInfo::Issue do
         described_class.new xml_with_invalid_rating
       rescue ComicInfo::Errors::RangeError => e
         expect(e.field).to eq 'CommunityRating'
-        expect(e.value).to eq 10.0
+        expect(e.value).to eq 6.0
         expect(e.min).to   eq 0.0
         expect(e.max).to   eq 5.0
       end
@@ -649,7 +652,7 @@ RSpec.describe ComicInfo::Issue do
     describe '#to_h' do
       it 'returns hash representation' do
         hash = complete_comic.to_h
-        expect(hash).to         be_a Hash
+        expect(hash).to         be_a  Hash
         expect(hash[:pages]).to be_an Array
 
         expect(hash[:title]).to  eq 'The Amazing Spider-Man'
@@ -662,10 +665,10 @@ RSpec.describe ComicInfo::Issue do
         expect(hash).to have_key :character
         expect(hash).to have_key :characters
 
-        expect(hash[:character]).to  be_a String
+        expect(hash[:character]).to  be_a  String
         expect(hash[:characters]).to be_an Array
 
-        expect(hash[:characters]).to eq ['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May']
+        expect(hash[:characters]).to        eq ['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May']
         expect(hash[:story_arc_numbers]).to eq %w[1 5]
       end
     end
