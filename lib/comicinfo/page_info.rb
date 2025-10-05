@@ -47,7 +47,7 @@ module ComicInfo
     end
 
     # Check if page has a specific type
-    def has_type? type
+    def include_type? type
       types.include?(type)
     end
 

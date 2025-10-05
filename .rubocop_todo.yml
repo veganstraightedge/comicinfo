@@ -6,17 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 1
-# Configuration parameters: NamePrefix, ForbiddenPrefixes, AllowedMethods, MethodDefinitionMacros, UseSorbetSigs.
-# NamePrefix: is_, has_, have_, does_
-# ForbiddenPrefixes: is_, has_, have_, does_
-# AllowedMethods: is_a?
-# MethodDefinitionMacros: define_method, define_singleton_method
-Naming/PredicatePrefix:
-  Exclude:
-    - spec/**/*
-    - lib/comicinfo/page_info.rb
-
 # Offense count: 2
 # Configuration parameters: CustomTransform, IgnoreMethods, IgnoreMetadata.
 RSpec/SpecFilePathFormat:
