@@ -5,7 +5,7 @@ RSpec.describe ComicInfo::Issue do
         comic = load_fixture 'valid_minimal.xml'
 
         expect(comic).to be_a described_class
-        expect(comic.title).to eq 'Minimal Comic'
+        expect(comic.title).to  eq 'Minimal Comic'
         expect(comic.series).to eq 'Test Series'
         expect(comic.number).to eq '1'
       end
@@ -14,9 +14,9 @@ RSpec.describe ComicInfo::Issue do
         comic = load_fixture 'valid_complete.xml'
 
         expect(comic).to be_a described_class
-        expect(comic.title).to eq 'The Amazing Spider-Man'
+        expect(comic.title).to  eq 'The Amazing Spider-Man'
         expect(comic.series).to eq 'The Amazing Spider-Man'
-        expect(comic.count).to eq 600
+        expect(comic.count).to  eq 600
         expect(comic.volume).to eq 3
         expect(comic.community_rating).to eq 4.25
       end
@@ -31,7 +31,7 @@ RSpec.describe ComicInfo::Issue do
     context 'with XML string' do
       it 'loads from XML string content' do
         xml_content = fixture_file 'valid_minimal.xml'
-        comic = described_class.load(xml_content)
+        comic = described_class.load xml_content
 
         expect(comic).to be_a described_class
         expect(comic.title).to eq 'Minimal Comic'

@@ -36,7 +36,7 @@ RSpec.describe ComicInfo do
       it 'raises an error when file contains invalid XML' do
         file_path = File.join(__dir__, 'fixtures', 'invalid_xml.xml')
         expect do
-          described_class.load(file_path)
+          described_class.load file_path
         end.to raise_error(ComicInfo::Errors::ParseError)
       end
     end
