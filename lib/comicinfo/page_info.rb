@@ -68,7 +68,7 @@ module ComicInfo
     def aspect_ratio
       return nil unless dimensions_available? && @image_height != 0
 
-      @image_width.to_f / @image_height.to_f
+      @image_width.to_f / @image_height
     end
 
     # Check if this page has a bookmark

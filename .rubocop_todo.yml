@@ -63,11 +63,3 @@ RSpec/SpecFilePathFormat:
   Exclude:
     - spec/comic_info_spec.rb
     - spec/comicinfo_spec.rb
-
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: left_coerce, right_coerce, single_coerce, fdiv
-Style/FloatDivision:
-  Exclude:
-    - lib/comicinfo/page_info.rb
