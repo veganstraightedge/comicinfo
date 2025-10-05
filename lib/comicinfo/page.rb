@@ -6,7 +6,7 @@ require_relative 'errors'
 module ComicInfo
   # Represents a single page in a comic book with metadata
   # Maps to ComicPageInfo type in the ComicInfo XSD schema
-  class ComicPageInfo
+  class Page
     # Page attributes from XSD schema
     attr_reader :image, :type, :double_page, :image_size, :key, :bookmark, :image_width, :image_height
 
@@ -114,12 +114,12 @@ module ComicInfo
 
     # Detailed inspection
     def inspect
-      "#<ComicInfo::ComicPageInfo #{self}>"
+      "#<ComicInfo::Page #{self}>"
     end
 
     # Equality comparison
     def == other
-      return false unless other.is_a?(ComicPageInfo)
+      return false unless other.is_a?(Page)
 
       @image == other.image &&
         @type == other.type &&
@@ -140,7 +140,7 @@ module ComicInfo
     private
 
     def parse_image value
-      raise Errors::SchemaError, 'Image attribute is required for ComicPageInfo' if value.nil? || value.to_s.empty?
+      raise Errors::SchemaError, 'Image attribute is required for Page' if value.nil? || value.to_s.empty?
 
       begin
         Integer(value)

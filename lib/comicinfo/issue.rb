@@ -4,12 +4,12 @@ require 'nokogiri'
 require 'date'
 require_relative 'enums'
 require_relative 'errors'
-require_relative 'page_info'
+require_relative 'page'
 
 module ComicInfo
   # Main class for parsing and accessing ComicInfo.xml data
   # Follows the ComicInfo XSD schema v2.0 specification
-  class ComicInfo
+  class Issue
     # String fields from ComicInfo schema
     attr_reader :title, :series, :number, :alternate_series, :alternate_number,
                 :summary, :notes, :writer, :penciller, :inker, :colorist,
@@ -254,7 +254,7 @@ module ComicInfo
         page_element.attributes.each do |name, attr|
           attributes[name] = attr.value
         end
-        ComicPageInfo.new(attributes)
+        Page.new(attributes)
       end
     end
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ComicInfo>
+  <Title></Title>
+  <Series></Series>
+  <Number></Number>
+  <Count></Count>
+  <Volume></Volume>
+  <AlternateSeries></AlternateSeries>
+  <AlternateNumber></AlternateNumber>
+  <AlternateCount></AlternateCount>
+  <Summary></Summary>
+  <Notes></Notes>
+  <Year></Year>
+  <Month></Month>
+  <Day></Day>
+  <Writer></Writer>
+  <Penciller></Penciller>
+  <Inker></Inker>
+  <Colorist></Colorist>
+  <Letterer></Letterer>
+  <CoverArtist></CoverArtist>
+  <Editor></Editor>
+  <Translator></Translator>
+  <Publisher></Publisher>
+  <Imprint></Imprint>
+  <Genre></Genre>
+  <Web></Web>
+  <PageCount></PageCount>
+  <LanguageISO></LanguageISO>
+  <Format></Format>
+  <BlackAndWhite></BlackAndWhite>
+  <Manga></Manga>
+  <Characters></Characters>
+  <Teams></Teams>
+  <Locations></Locations>
+  <ScanInformation></ScanInformation>
+  <StoryArc></StoryArc>
+  <StoryArcNumber></StoryArcNumber>
+  <SeriesGroup></SeriesGroup>
+  <AgeRating></AgeRating>
+  <Pages>
+  </Pages>
+  <CommunityRating></CommunityRating>
+  <MainCharacterOrTeam></MainCharacterOrTeam>
+  <Review></Review>
+</ComicInfo>

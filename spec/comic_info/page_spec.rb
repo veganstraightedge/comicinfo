@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe ComicInfo::ComicPageInfo do
+RSpec.describe ComicInfo::Page do
   describe '#initialize' do
     it 'creates a page with required Image attribute' do
       page = described_class.new('Image' => '0', 'Type' => 'Story')
@@ -11,7 +11,7 @@ RSpec.describe ComicInfo::ComicPageInfo do
     it 'raises error when Image attribute is missing' do
       expect do
         described_class.new('Type' => 'Story')
-      end.to raise_error(ComicInfo::Errors::SchemaError, 'Image attribute is required for ComicPageInfo')
+      end.to raise_error(ComicInfo::Errors::SchemaError, 'Image attribute is required for Page')
     end
 
     it 'raises error when Image attribute is invalid' do
@@ -39,15 +39,15 @@ RSpec.describe ComicInfo::ComicPageInfo do
     end
 
     it 'handles boolean conversion for DoublePage' do
-      page1 = described_class.new('Image' => '1', 'DoublePage' => 'true')
-      page2 = described_class.new('Image' => '2', 'DoublePage' => 'false')
-      page3 = described_class.new('Image' => '3', 'DoublePage' => '1')
-      page4 = described_class.new('Image' => '4', 'DoublePage' => '0')
+      true_page = described_class.new('Image' => '1', 'DoublePage' => 'true')
+      false_page = described_class.new('Image' => '2', 'DoublePage' => 'false')
+      one_page = described_class.new('Image' => '3', 'DoublePage' => '1')
+      zero_page = described_class.new('Image' => '4', 'DoublePage' => '0')
 
-      expect(page1.double_page).to be true
-      expect(page2.double_page).to be false
-      expect(page3.double_page).to be true
-      expect(page4.double_page).to be false
+      expect(true_page.double_page).to be true
+      expect(false_page.double_page).to be false
+      expect(one_page.double_page).to be true
+      expect(zero_page.double_page).to be false
     end
 
     it 'raises error for invalid boolean values' do
@@ -58,21 +58,22 @@ RSpec.describe ComicInfo::ComicPageInfo do
   end
 
   describe 'page type predicates' do
-    let(:front_cover) { described_class.new('Image' => '0', 'Type' => 'FrontCover') }
-    let(:back_cover) { described_class.new('Image' => '1', 'Type' => 'BackCover') }
-    let(:inner_cover) { described_class.new('Image' => '2', 'Type' => 'InnerCover') }
-    let(:story_page) { described_class.new('Image' => '3', 'Type' => 'Story') }
-    let(:ad_page) { described_class.new('Image' => '4', 'Type' => 'Advertisement') }
-    let(:deleted_page) { described_class.new('Image' => '5', 'Type' => 'Deleted') }
-
     describe '#cover?' do
       it 'returns true for cover page types' do
+        front_cover = described_class.new('Image' => '0', 'Type' => 'FrontCover')
+        back_cover = described_class.new('Image' => '1', 'Type' => 'BackCover')
+        inner_cover = described_class.new('Image' => '2', 'Type' => 'InnerCover')
+
         expect(front_cover.cover?).to be true
         expect(back_cover.cover?).to be true
         expect(inner_cover.cover?).to be true
       end
 
       it 'returns false for non-cover page types' do
+        story_page = described_class.new('Image' => '3', 'Type' => 'Story')
+        ad_page = described_class.new('Image' => '4', 'Type' => 'Advertisement')
+        deleted_page = described_class.new('Image' => '5', 'Type' => 'Deleted')
+
         expect(story_page.cover?).to be false
         expect(ad_page.cover?).to be false
         expect(deleted_page.cover?).to be false
@@ -81,10 +82,15 @@ RSpec.describe ComicInfo::ComicPageInfo do
 
     describe '#story?' do
       it 'returns true for story pages' do
+        story_page = described_class.new('Image' => '3', 'Type' => 'Story')
         expect(story_page.story?).to be true
       end
 
       it 'returns false for non-story pages' do
+        front_cover = described_class.new('Image' => '0', 'Type' => 'FrontCover')
+        ad_page = described_class.new('Image' => '4', 'Type' => 'Advertisement')
+        deleted_page = described_class.new('Image' => '5', 'Type' => 'Deleted')
+
         expect(front_cover.story?).to be false
         expect(ad_page.story?).to be false
         expect(deleted_page.story?).to be false
@@ -93,10 +99,15 @@ RSpec.describe ComicInfo::ComicPageInfo do
 
     describe '#deleted?' do
       it 'returns true for deleted pages' do
+        deleted_page = described_class.new('Image' => '5', 'Type' => 'Deleted')
         expect(deleted_page.deleted?).to be true
       end
 
       it 'returns false for non-deleted pages' do
+        front_cover = described_class.new('Image' => '0', 'Type' => 'FrontCover')
+        story_page = described_class.new('Image' => '3', 'Type' => 'Story')
+        ad_page = described_class.new('Image' => '4', 'Type' => 'Advertisement')
+
         expect(front_cover.deleted?).to be false
         expect(story_page.deleted?).to be false
         expect(ad_page.deleted?).to be false
@@ -189,12 +200,12 @@ RSpec.describe ComicInfo::ComicPageInfo do
 
     it 'returns nil when dimensions are not available' do
       page = described_class.new('Image' => '1')
-      expect(page.aspect_ratio).to be nil
+      expect(page.aspect_ratio).to be_nil
     end
 
     it 'returns nil when height is zero' do
       page = described_class.new('Image' => '1', 'ImageWidth' => '1600', 'ImageHeight' => '0')
-      expect(page.aspect_ratio).to be nil
+      expect(page.aspect_ratio).to be_nil
     end
   end
 
@@ -216,58 +227,41 @@ RSpec.describe ComicInfo::ComicPageInfo do
   end
 
   describe '#to_h' do
-    it 'returns hash representation of page' do
-      page = described_class.new(
-        'Image'       => '5',
-        'Type'        => 'Story',
-        'DoublePage'  => 'true',
-        'ImageSize'   => '1024000',
-        'Key'         => 'page-key',
-        'Bookmark'    => 'Important Scene',
-        'ImageWidth'  => '1600',
-        'ImageHeight' => '2400'
+    let(:full_page) do
+      described_class.new(
+        'Image' => '5', 'Type' => 'Story', 'DoublePage' => 'true',
+        'ImageSize' => '1024000', 'Key' => 'page-key', 'Bookmark' => 'Important Scene',
+        'ImageWidth' => '1600', 'ImageHeight' => '2400'
       )
+    end
 
+    it 'returns hash representation of page' do
       expected = {
-        image:        5,
-        type:         'Story',
-        double_page:  true,
-        image_size:   1_024_000,
-        key:          'page-key',
-        bookmark:     'Important Scene',
-        image_width:  1600,
-        image_height: 2400
+        image: 5, type: 'Story', double_page: true, image_size: 1_024_000,
+        key: 'page-key', bookmark: 'Important Scene', image_width: 1600, image_height: 2400
       }
 
-      expect(page.to_h).to eq(expected)
+      expect(full_page.to_h).to eq(expected)
     end
   end
 
   describe '#to_xml_attributes' do
-    it 'returns XML attributes hash with non-default values' do
-      page = described_class.new(
-        'Image'       => '5',
-        'Type'        => 'FrontCover',
-        'DoublePage'  => 'true',
-        'ImageSize'   => '1024000',
-        'Key'         => 'cover',
-        'Bookmark'    => 'Start',
-        'ImageWidth'  => '1600',
-        'ImageHeight' => '2400'
+    let(:xml_page) do
+      described_class.new(
+        'Image' => '5', 'Type' => 'FrontCover', 'DoublePage' => 'true',
+        'ImageSize' => '1024000', 'Key' => 'cover', 'Bookmark' => 'Start',
+        'ImageWidth' => '1600', 'ImageHeight' => '2400'
       )
+    end
 
+    it 'returns XML attributes hash with non-default values' do
       expected = {
-        'Image'       => '5',
-        'Type'        => 'FrontCover',
-        'DoublePage'  => 'true',
-        'ImageSize'   => '1024000',
-        'Key'         => 'cover',
-        'Bookmark'    => 'Start',
-        'ImageWidth'  => '1600',
-        'ImageHeight' => '2400'
+        'Image' => '5', 'Type' => 'FrontCover', 'DoublePage' => 'true',
+        'ImageSize' => '1024000', 'Key' => 'cover', 'Bookmark' => 'Start',
+        'ImageWidth' => '1600', 'ImageHeight' => '2400'
       }
 
-      expect(page.to_xml_attributes).to eq(expected)
+      expect(xml_page.to_xml_attributes).to eq(expected)
     end
 
     it 'omits default values from XML attributes' do
@@ -303,13 +297,13 @@ RSpec.describe ComicInfo::ComicPageInfo do
   describe '#inspect' do
     it 'returns detailed inspection string' do
       page = described_class.new('Image' => '5', 'Type' => 'Story')
-      expect(page.inspect).to start_with('#<ComicInfo::ComicPageInfo')
+      expect(page.inspect).to start_with('#<ComicInfo::Page')
       expect(page.inspect).to include('Page 5')
     end
   end
 
   describe 'equality and hashing' do
-    let(:page1) do
+    let(:first_page) do
       described_class.new(
         'Image'       => '1',
         'Type'        => 'Story',
@@ -322,7 +316,7 @@ RSpec.describe ComicInfo::ComicPageInfo do
       )
     end
 
-    let(:page2) do
+    let(:duplicate_page) do
       described_class.new(
         'Image'       => '1',
         'Type'        => 'Story',
@@ -335,7 +329,7 @@ RSpec.describe ComicInfo::ComicPageInfo do
       )
     end
 
-    let(:page3) do
+    let(:different_page) do
       described_class.new(
         'Image' => '2',
         'Type'  => 'Story'
@@ -344,27 +338,27 @@ RSpec.describe ComicInfo::ComicPageInfo do
 
     describe '#==' do
       it 'returns true for pages with identical attributes' do
-        expect(page1 == page2).to be true
-        expect(page1.eql?(page2)).to be true
+        expect(first_page == duplicate_page).to be true
+        expect(first_page.eql?(duplicate_page)).to be true
       end
 
       it 'returns false for pages with different attributes' do
-        expect(page1 == page3).to be false
-        expect(page1.eql?(page3)).to be false
+        expect(first_page == different_page).to be false
+        expect(first_page.eql?(different_page)).to be false
       end
 
-      it 'returns false when comparing to non-ComicPageInfo object' do
-        expect(page1 == 'not a page').to be false
+      it 'returns false when comparing to non-Page object' do
+        expect(first_page == 'not a page').to be false
       end
     end
 
     describe '#hash' do
       it 'returns same hash for equal pages' do
-        expect(page1.hash).to eq(page2.hash)
+        expect(first_page.hash).to eq(duplicate_page.hash)
       end
 
       it 'returns different hash for different pages' do
-        expect(page1.hash).not_to eq(page3.hash)
+        expect(first_page.hash).not_to eq(different_page.hash)
       end
     end
   end
