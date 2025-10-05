@@ -1,14 +1,14 @@
-# AGENT.md - Development Guidelines for ComicInfo Ruby Gem
+# Development Guidelines
 
 ## Project Overview
-This Ruby gem provides an idiomatic interface for working with ComicInfo.xml files, following the official ComicInfo schema specifications from the Anansi Project.
+This Ruby gem provides an idiomatic interface for working with ComicInfo.xml files,
+following the official ComicInfo schema specifications from the Anansi Project.
 
 ## Development Philosophy
 - **Test-Driven Development**: Write failing tests first, then implement functionality
 - **Idiomatic Ruby**: Follow Ruby conventions and best practices
 - **Schema Compliance**: Strict adherence to ComicInfo XSD schema definitions
 - **Error Handling**: Graceful handling of malformed XML and invalid data
-- **Performance**: Efficient XML parsing and memory usage
 
 ## Code Standards
 
@@ -24,9 +24,6 @@ This Ruby gem provides an idiomatic interface for working with ComicInfo.xml fil
 ### Code Style
 - Follow RuboCop rules (configured in `.rubocop.yml`)
 - Use 2-space indentation
-- Maximum line length: 120 characters
-- Prefer explicit returns in public methods
-- Use descriptive variable and method names
 
 ### Testing Guidelines
 - Use RSpec for all tests
@@ -35,29 +32,30 @@ This Ruby gem provides an idiomatic interface for working with ComicInfo.xml fil
 - Aim for >95% test coverage
 - Group related tests in describe/context blocks
 - Use descriptive test descriptions
+- **Code Alignment**: Align similar parts of lines only within the same method or `it` block
+- **Test Structure**: Align expect statements within individual test cases for readability
 
 ### File Organization
 ```
 lib/
-├── comicinfo.rb              # Main module and autoloads
-├── comicinfo/
-│   ├── version.rb            # Gem version constant
-│   ├── issue.rb              # Main ComicInfo::Issue class
-│   ├── page.rb               # ComicInfo::Page class
-│   ├── enums.rb              # Schema enum definitions
-│   └── errors.rb             # Custom exception classes
+├─ comicinfo.rb                # Main module and autoloads
+├─ comicinfo/
+│   ├─ version.rb             # Gem version constant
+│   ├─ issue.rb               # Main ComicInfo::Issue class
+│   ├─ page.rb                # ComicInfo::Page class
+│   ├─ enums.rb               # Schema enum definitions
+│   └─ errors.rb              # Custom exception classes
 spec/
-├── spec_helper.rb            # RSpec configuration with FixtureHelpers
-├── comic_info_spec.rb        # Main module specs
-├── comic_info/
-│   ├── issue_spec.rb         # ComicInfo::Issue class specs
-│   ├── page_spec.rb          # ComicInfo::Page class specs
-│   └── fixtures/             # XML test fixtures
-│       ├── valid_minimal.xml
-│       ├── valid_complete.xml
-│       ├── invalid_xml.xml
-│       └── edge_cases/
-└── fixtures/                 # Additional fixtures for top-level specs
+├─ spec_helper.rb              # RSpec configuration with FixtureHelpers
+├─ comic_info_spec.rb          # Main module specs
+├─ comic_info/
+│   ├─ issue_spec.rb          # ComicInfo::Issue class specs
+│   └─ page_spec.rb           # ComicInfo::Page class specs
+└─ fixtures/                   # XML test fixtures
+│       ├─ valid_minimal.xml
+│       ├─ valid_complete.xml
+│       ├─ invalid_xml.xml
+│       └─ edge_cases/
 ```
 
 ## API Design Principles
@@ -65,23 +63,23 @@ spec/
 ### Class Interface
 ```ruby
 # Primary interface
-ComicInfo.load(file_path_or_xml_string) #=> ComicInfo::Issue instance
-ComicInfo::Issue.new(xml_string) #=> ComicInfo::Issue instance
+ComicInfo.load file_path_or_xml_string #=> ComicInfo::Issue instance
+ComicInfo::Issue.new xml_string        #=> ComicInfo::Issue instance
 
 # Instance methods match schema fields
-comic.title #=> String
+comic.title  #=> String
 comic.series #=> String
-comic.count #=> Integer
+comic.count  #=> Integer
+comic.pages  #=> Array<ComicInfo::Page>
 comic.black_and_white #=> String (enum value)
-comic.pages #=> Array<ComicInfo::Page>
 
 # Multi-value fields have both singular and plural methods
-comic.character #=> String (comma-separated)
+comic.character  #=> String (comma-separated)
 comic.characters #=> Array<String>
-comic.genre #=> String (comma-separated)
-comic.genres #=> Array<String>
-comic.web #=> String (space-separated URLs)
-comic.web_urls #=> Array<String>
+comic.genre      #=> String (comma-separated)
+comic.genres     #=> Array<String>
+comic.web        #=> String (space-separated URLs)
+comic.web_urls   #=> Array<String>
 ```
 
 ### Naming Conventions
@@ -105,11 +103,6 @@ comic.web_urls #=> Array<String>
 
 ## Development Workflow
 
-### Before Starting Work
-1. Read the relevant ComicInfo schema documentation
-2. Understand the XML structure and constraints
-3. Plan the Ruby interface design
-
 ### Development Process
 1. Write failing tests with fixture files
 2. Implement minimal code to make tests pass
@@ -119,7 +112,7 @@ comic.web_urls #=> Array<String>
 6. Update documentation if needed
 
 ### Before Committing
-```bash
+```sh
 # Run linter (must pass)
 bundle exec rubocop
 
@@ -183,7 +176,12 @@ RSpec.describe ComicInfo::Issue do
     context 'with valid file path' do
       it 'loads from fixture' do
         comic = load_fixture 'valid_minimal.xml'
-        expect(comic.title).to eq 'Expected Title'
+
+        expect(comic).to be_a described_class
+
+        expect(comic.title).to  eq 'Expected Title'
+        expect(comic.series).to eq 'Expected Series'
+        expect(comic.number).to eq '1'
       end
     end
 
@@ -191,6 +189,8 @@ RSpec.describe ComicInfo::Issue do
       it 'parses XML content' do
         xml_content = fixture_file 'valid_complete.xml'
         comic = described_class.new xml_content
+
+        expect(comic).to be_a described_class
         expect(comic.series).to eq 'Expected Series'
       end
     end
@@ -198,21 +198,38 @@ RSpec.describe ComicInfo::Issue do
 
   describe 'multi-value fields' do
     describe 'singular methods (return strings)' do
-      # Test comma-separated string values
+      it 'returns character as comma-separated string' do
+        expect(complete_comic.character).to eq 'Spider-Man, Peter Parker'
+      end
     end
 
     describe 'plural methods (return arrays)' do
-      # Test array conversion
+      it 'returns characters as array' do
+        expect(complete_comic.characters).to eq ['Spider-Man', 'Peter Parker']
+      end
     end
   end
 end
 ```
 
 ## Performance Considerations
-- Use Nokogiri's efficient XML parsing with CSS selectors
+- Use Nokogiri’s XML parsing with CSS selectors
 - ComicInfo.xml files are typically small (<100KB)
 - Focus on code clarity over micro-optimizations
-- Cache parsed values to avoid re-parsing
+
+## Code Quality Standards
+
+### Test Code Formatting
+- **Alignment Scope**: Only align similar parts of lines within the same method or `it` block
+- **Good Example**: Align multiple expect statements within one test case
+- **Bad Example**: Aligning across different `it` blocks or test methods
+- **Consistency**: Maintain consistent alignment patterns within each test scope
+
+### Test Coverage Requirements
+- All public methods must have corresponding test cases
+- Edge cases and error conditions must be tested
+- Fixture files should cover various scenarios (minimal, complete, invalid, edge cases)
+- Test descriptions should be clear and specific
 
 ## Documentation
 - Maintain comprehensive README with examples
@@ -220,9 +237,19 @@ end
 - Include schema field descriptions in code comments
 - Support multiple schema versions (1.0, 2.0, 2.1-draft)
 
+## Implementation Status
+- ✅ Core reading functionality complete
+- ✅ All schema fields implemented and tested
+- ✅ Comprehensive test suite (156 test cases)
+- ✅ Error handling with custom exception classes
+- ✅ Multi-value field support (singular/plural methods)
+- ✅ Page objects with full attribute support
+- ✅ Enum validation and type coercion
+- ✅ Unicode and special character handling
+
 ## Future Considerations
 - XML writing/generation capabilities (.to_xml method)
-- JSON export (.to_json method)
-- YAML export (.to_yaml method)
+- JSON export (.to_json method) - **Partially implemented**
+- YAML export (.to_yaml method) - **Partially implemented**
 - Schema version detection and migration
 - CLI tool for ComicInfo manipulation

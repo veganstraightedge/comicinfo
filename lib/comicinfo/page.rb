@@ -9,13 +9,13 @@ module ComicInfo
     attr_reader :image, :type, :double_page, :image_size, :key, :bookmark, :image_width, :image_height
 
     def initialize attributes = {}
-      @image = parse_image(attributes['Image'] || attributes[:image])
-      @type = Enums::Validators.validate_comic_page_type(attributes['Type'] || attributes[:type])
-      @double_page = parse_boolean(attributes['DoublePage'] || attributes[:double_page])
-      @image_size = parse_image_size(attributes['ImageSize'] || attributes[:image_size])
-      @key = (attributes['Key'] || attributes[:key] || Enums::DEFAULT_STRING).to_s
-      @bookmark = (attributes['Bookmark'] || attributes[:bookmark] || Enums::DEFAULT_STRING).to_s
-      @image_width = parse_image_dimension(attributes['ImageWidth'] || attributes[:image_width], 'ImageWidth')
+      @image        = parse_image(attributes['Image'] || attributes[:image])
+      @type         = Enums::Validators.validate_comic_page_type(attributes['Type'] || attributes[:type])
+      @double_page  = parse_boolean(attributes['DoublePage'] || attributes[:double_page])
+      @image_size   = parse_image_size(attributes['ImageSize'] || attributes[:image_size])
+      @key          = (attributes['Key'] || attributes[:key] || Enums::DEFAULT_STRING).to_s
+      @bookmark     = (attributes['Bookmark'] || attributes[:bookmark] || Enums::DEFAULT_STRING).to_s
+      @image_width  = parse_image_dimension(attributes['ImageWidth'] || attributes[:image_width], 'ImageWidth')
       @image_height = parse_image_dimension(attributes['ImageHeight'] || attributes[:image_height], 'ImageHeight')
     end
 
@@ -91,12 +91,12 @@ module ComicInfo
     # Convert to XML attributes hash (for XML generation)
     def to_xml_attributes
       attrs = { 'Image' => @image.to_s }
-      attrs['Type'] = @type unless @type == Enums::DEFAULT_PAGE_TYPE
-      attrs['DoublePage'] = @double_page.to_s unless @double_page == Enums::DEFAULT_DOUBLE_PAGE
-      attrs['ImageSize'] = @image_size.to_s unless @image_size == Enums::DEFAULT_IMAGE_SIZE
-      attrs['Key'] = @key unless @key.empty?
-      attrs['Bookmark'] = @bookmark unless @bookmark.empty?
-      attrs['ImageWidth'] = @image_width.to_s unless @image_width == Enums::DEFAULT_INTEGER
+      attrs['Type']        = @type unless @type == Enums::DEFAULT_PAGE_TYPE
+      attrs['DoublePage']  = @double_page.to_s unless @double_page == Enums::DEFAULT_DOUBLE_PAGE
+      attrs['ImageSize']   = @image_size.to_s unless @image_size == Enums::DEFAULT_IMAGE_SIZE
+      attrs['Key']         = @key unless @key.empty?
+      attrs['Bookmark']    = @bookmark unless @bookmark.empty?
+      attrs['ImageWidth']  = @image_width.to_s unless @image_width == Enums::DEFAULT_INTEGER
       attrs['ImageHeight'] = @image_height.to_s unless @image_height == Enums::DEFAULT_INTEGER
       attrs
     end

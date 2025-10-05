@@ -74,14 +74,10 @@ class SchemaDownloader
     content = File.read(file_path)
 
     # Basic validation - check it starts with XML declaration or schema element
-    unless content.strip.start_with?('<?xml', '<xs:schema')
-      raise "Downloaded file doesn't appear to be valid XML schema"
-    end
+    raise "Downloaded file doesn't appear to be valid XML schema" unless content.strip.start_with?('<?xml', '<xs:schema')
 
     # Check for schema namespace
-    unless content.include?('http://www.w3.org/2001/XMLSchema')
-      raise "Downloaded file doesn't appear to be an XSD schema"
-    end
+    raise "Downloaded file doesn't appear to be an XSD schema" unless content.include?('http://www.w3.org/2001/XMLSchema')
 
     puts '   ✅ Schema file validated'
   end

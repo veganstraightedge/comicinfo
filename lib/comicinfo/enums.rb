@@ -73,9 +73,7 @@ module ComicInfo
       def self.validate_age_rating value
         return DEFAULT_ENUM_UNKNOWN if value.nil? || value.empty?
 
-        unless AGE_RATING_VALUES.include?(value)
-          raise Errors::InvalidEnumError.new('AgeRating', value, AGE_RATING_VALUES)
-        end
+        raise Errors::InvalidEnumError.new('AgeRating', value, AGE_RATING_VALUES) unless AGE_RATING_VALUES.include?(value)
 
         value
       end
@@ -125,9 +123,7 @@ module ComicInfo
         return DEFAULT_INTEGER if value.nil? || value.empty?
 
         year = validate_integer(value, 'Year')
-        if year != DEFAULT_INTEGER && (year < 1000 || year > 9999)
-          raise Errors::RangeError.new('Year', year, 1000, 9999)
-        end
+        raise Errors::RangeError.new('Year', year, 1000, 9999) if year != DEFAULT_INTEGER && (year < 1000 || year > 9999)
 
         year
       end

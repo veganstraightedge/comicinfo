@@ -61,23 +61,46 @@
   - [x] Boolean helpers for enums
   - [x] Array methods for multi-value fields
 
-## Phase 5: Writing Functionality (Future)
-- [ ] Implement XML generation
-- [ ] ComicInfo#save method
-- [ ] ComicInfo#to_xml method
-- [ ] Preserve original formatting when possible
+## Phase 5: Export Functionality (Partial) 🚧
+- [x] JSON export functionality
+  - [x] ComicInfo#to_json method
+  - [x] ComicInfo#to_h method for hash representation
+  - [x] Include both singular and plural forms
+- [x] YAML export functionality (needs Symbol class support fix)
+  - [x] ComicInfo#to_yaml method
+  - [ ] Fix YAML.safe_load compatibility with symbols
+- [ ] XML writing/generation functionality
+  - [ ] ComicInfo#to_xml method
+  - [ ] ComicInfo#save method
+  - [ ] Preserve original formatting when possible
 
-## Phase 6: Testing & Quality (Partial) ✅
-- [x] Comprehensive test coverage (139 tests covering all functionality)
+## Phase 6: Testing & Quality ✅
+- [x] Comprehensive test coverage (156 tests covering all functionality)
+- [x] Code alignment standards implemented
+  - [x] Align expect statements within same it blocks
+  - [x] Maintain consistent formatting patterns
+  - [x] Follow Ruby test formatting best practices
+- [x] Error handling validation
+  - [x] Custom exception classes with detailed messages
+  - [x] Enum validation error messages
+  - [x] Range validation error messages
 - [ ] Performance testing with large files
 - [ ] Memory usage optimization
 - [ ] Documentation generation
-- [ ] Example usage in README
+- [x] Example usage in README
 
-## Phase 7: Schema Version Support
+## Phase 7: Schema Version Support (Future)
 - [ ] Support ComicInfo v1.0 schema
 - [ ] Support ComicInfo v2.1 draft schema
 - [ ] Version detection and migration
+
+## Phase 8: Missing Test Fixtures ⚠️
+- [ ] Create missing edge case fixtures
+  - [ ] edge_cases/empty_fields.xml
+  - [ ] edge_cases/unicode_characters.xml
+  - [ ] edge_cases/manga_rtl.xml
+- [ ] Fix test expectations for error message patterns
+- [ ] Implement missing convenience methods referenced in tests
 
 ## Development Standards ✅
 - [x] All code must pass RuboCop linting
@@ -86,11 +109,23 @@
 - [x] Comprehensive fixture files (no inline XML)
 - [x] Idiomatic Ruby patterns throughout
 - [x] Ruby 3.4.6+ compatibility maintained
+- [x] Code alignment within test blocks for readability
+
+## Current Status
+- ✅ **Core Reading**: Fully implemented with comprehensive test coverage
+- ✅ **Schema Compliance**: All ComicInfo v2.0 fields supported
+- ✅ **Error Handling**: Custom exceptions with detailed error messages  
+- ✅ **Multi-value Fields**: Both string and array access methods
+- ✅ **Page Support**: Full ComicPageInfo object implementation
+- 🚧 **Export Features**: JSON complete, YAML needs symbol support fix
+- ⚠️ **Test Fixtures**: Some edge case fixtures missing (7 failing tests)
+- 🚧 **XML Generation**: Not yet implemented
 
 ## Notes
-- Focus on reading functionality first
-- Use Nokogiri for all XML operations
-- RSpec for comprehensive test suite
-- All enum values should be validated against schema
-- Handle malformed XML gracefully
-- Support both file paths and XML strings in .load method
+- Focus on reading functionality first ✅
+- Use Nokogiri for all XML operations ✅
+- RSpec for comprehensive test suite ✅
+- All enum values should be validated against schema ✅
+- Handle malformed XML gracefully ✅
+- Support both file paths and XML strings in .load method ✅
+- Next priority: Fix missing test fixtures and YAML symbol support
