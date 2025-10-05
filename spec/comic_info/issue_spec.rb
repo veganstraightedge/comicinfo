@@ -542,7 +542,7 @@ RSpec.describe ComicInfo::Issue do
         </ComicInfo>
       XML
 
-      expect do
+      begin
         described_class.new xml_with_invalid_enum
       rescue ComicInfo::Errors::InvalidEnumError => e
         expect(e.field).to eq 'BlackAndWhite'
@@ -559,7 +559,7 @@ RSpec.describe ComicInfo::Issue do
         </ComicInfo>
       XML
 
-      expect do
+      begin
         described_class.new xml_with_invalid_rating
       rescue ComicInfo::Errors::RangeError => e
         expect(e.field).to eq 'CommunityRating'
