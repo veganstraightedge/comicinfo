@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module ComicInfo
   module Errors
     # Base error class for all ComicInfo-related errors

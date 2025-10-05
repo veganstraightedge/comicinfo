@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.describe ComicInfo::Page do
   describe '#initialize' do
     it 'creates a page with required Image attribute' do

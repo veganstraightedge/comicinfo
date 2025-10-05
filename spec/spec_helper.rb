@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'comicinfo'
 
 # Helper methods for working with fixture files

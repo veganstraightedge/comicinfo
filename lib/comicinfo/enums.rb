@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module ComicInfo
   module Enums
     # YesNo enum values for BlackAndWhite field
