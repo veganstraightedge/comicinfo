@@ -1,0 +1,101 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'net/http'
+require 'uri'
+require 'fileutils'
+
+# Schema download script for ComicInfo XSD files
+# Downloads schema files from the upstream ComicInfo repository
+class SchemaDownloader
+  BASE_URL = 'https://raw.githubusercontent.com/anansi-project/comicinfo'
+  SCHEMAS = {
+    '1.0'       => {
+      branch: 'main',
+      path:   'schema/v1.0/ComicInfo.xsd'
+    },
+    '2.0'       => {
+      branch: 'main',
+      path:   'schema/v2.0/ComicInfo.xsd'
+    },
+    '2.1-draft' => {
+      branch: 'main',
+      path:   'drafts/v2.1/ComicInfo.xsd'
+    }
+  }.freeze
+
+  def initialize
+    @base_dir = File.join(__dir__, '..', 'schemas')
+  end
+
+  def download_all
+    puts 'Downloading ComicInfo schema files...'
+
+    SCHEMAS.each do |version, config|
+      download_schema(version, config)
+    end
+
+    puts '✅ All schema files downloaded successfully!'
+  end
+
+  private
+
+  def download_schema version, config
+    url = build_url(config[:branch], config[:path])
+    destination = File.join(@base_dir, version, 'ComicInfo.xsd')
+
+    puts "📥 Downloading #{version} schema from #{url}"
+
+    # Create directory structure
+    FileUtils.mkdir_p(File.dirname(destination))
+
+    # Download file
+    uri = URI(url)
+    response = Net::HTTP.get_response(uri)
+
+    unless response.is_a?(Net::HTTPSuccess)
+      raise "Failed to download #{version} schema: #{response.code} #{response.message}"
+    end
+
+    # Save file
+    File.write(destination, response.body)
+    puts "   ✅ Saved to #{destination}"
+
+    # Validate it's XML
+    validate_xml(destination)
+  rescue StandardError => e
+    puts "   ❌ Error downloading #{version}: #{e.message}"
+    raise
+  end
+
+  def build_url branch, path
+    "#{BASE_URL}/#{branch}/#{path}"
+  end
+
+  def validate_xml file_path
+    content = File.read(file_path)
+
+    # Basic validation - check it starts with XML declaration or schema element
+    unless content.strip.start_with?('<?xml', '<xs:schema')
+      raise "Downloaded file doesn't appear to be valid XML schema"
+    end
+
+    # Check for schema namespace
+    unless content.include?('http://www.w3.org/2001/XMLSchema')
+      raise "Downloaded file doesn't appear to be an XSD schema"
+    end
+
+    puts '   ✅ Schema file validated'
+  end
+end
+
+# Run the downloader
+if __FILE__ == $0
+  begin
+    downloader = SchemaDownloader.new
+    downloader.download_all
+  rescue StandardError => e
+    puts "❌ Schema download failed: #{e.message}"
+    exit 1
+  end
+end
