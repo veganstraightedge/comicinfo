@@ -42,20 +42,22 @@ lib/
 ├── comicinfo.rb              # Main module and autoloads
 ├── comicinfo/
 │   ├── version.rb            # Gem version constant
-│   ├── comic_info.rb         # Main ComicInfo class
+│   ├── issue.rb              # Main ComicInfo::Issue class
+│   ├── page.rb               # ComicInfo::Page class
 │   ├── enums.rb              # Schema enum definitions
-│   ├── page_info.rb          # ComicPageInfo class
 │   └── errors.rb             # Custom exception classes
 spec/
-├── spec_helper.rb            # RSpec configuration
-├── comicinfo_spec.rb         # Main module specs
-├── comic_info_spec.rb        # ComicInfo class specs
-├── fixtures/                 # XML test fixtures
-│   ├── valid_minimal.xml
-│   ├── valid_complete.xml
-│   ├── invalid_xml.xml
-│   └── edge_cases/
-└── support/                  # Test helpers
+├── spec_helper.rb            # RSpec configuration with FixtureHelpers
+├── comic_info_spec.rb        # Main module specs
+├── comic_info/
+│   ├── issue_spec.rb         # ComicInfo::Issue class specs
+│   ├── page_spec.rb          # ComicInfo::Page class specs
+│   └── fixtures/             # XML test fixtures
+│       ├── valid_minimal.xml
+│       ├── valid_complete.xml
+│       ├── invalid_xml.xml
+│       └── edge_cases/
+└── fixtures/                 # Additional fixtures for top-level specs
 ```
 
 ## API Design Principles
@@ -63,24 +65,37 @@ spec/
 ### Class Interface
 ```ruby
 # Primary interface
-ComicInfo.load(file_path_or_xml_string) #=> ComicInfo instance
-ComicInfo.new(xml_string) #=> ComicInfo instance
+ComicInfo.load(file_path_or_xml_string) #=> ComicInfo::Issue instance
+ComicInfo::Issue.new(xml_string) #=> ComicInfo::Issue instance
 
 # Instance methods match schema fields
 comic.title #=> String
 comic.series #=> String
 comic.count #=> Integer
 comic.black_and_white #=> String (enum value)
-comic.pages #=> Array<ComicPageInfo>
+comic.pages #=> Array<ComicInfo::Page>
+
+# Multi-value fields have both singular and plural methods
+comic.character #=> String (comma-separated)
+comic.characters #=> Array<String>
+comic.genre #=> String (comma-separated)
+comic.genres #=> Array<String>
+comic.web #=> String (space-separated URLs)
+comic.web_urls #=> Array<String>
 ```
 
 ### Naming Conventions
-- Class names: `ComicInfo`, `ComicPageInfo`
+- Class names: `ComicInfo::Issue`, `ComicInfo::Page`
 - Method names: snake_case following Ruby conventions
 - Schema field mapping:
   - XML `<Title>` → Ruby `#title`
   - XML `<BlackAndWhite>` → Ruby `#black_and_white`
   - XML `<CommunityRating>` → Ruby `#community_rating`
+- Multi-value fields:
+  - Singular method returns original string from XML
+  - Plural method returns array of split values
+  - XML `<Characters>` → Ruby `#character` (string) & `#characters` (array)
+  - XML `<Teams>` → Ruby `#team` (string) & `#teams` (array)
 
 ### Error Handling
 - Define custom exception classes in `ComicInfo::Errors`
@@ -159,45 +174,55 @@ Create comprehensive XML fixtures covering:
 1. **Unit tests**: Individual method behavior
 2. **Integration tests**: Full XML parsing workflows
 3. **Error handling tests**: Invalid inputs and edge cases
-4. **Performance tests**: Large files and memory usage
+4. **Fixture helpers**: Centralized test data management
 
 ### Test Organization
 ```ruby
-RSpec.describe ComicInfo do
+RSpec.describe ComicInfo::Issue do
   describe '.load' do
     context 'with valid file path' do
-      # Test file loading
+      it 'loads from fixture' do
+        comic = load_fixture('valid_minimal.xml')
+        expect(comic.title).to eq('Expected Title')
+      end
     end
     
     context 'with XML string' do
-      # Test direct XML parsing
-    end
-    
-    context 'with invalid input' do
-      # Test error handling
+      it 'parses XML content' do
+        xml_content = fixture_file('valid_complete.xml')
+        comic = described_class.new(xml_content)
+        expect(comic.series).to eq('Expected Series')
+      end
     end
   end
   
-  describe 'schema fields' do
-    # Test each field type
+  describe 'multi-value fields' do
+    describe 'singular methods (return strings)' do
+      # Test comma-separated string values
+    end
+    
+    describe 'plural methods (return arrays)' do
+      # Test array conversion
+    end
   end
 end
 ```
 
 ## Performance Considerations
-- Use Nokogiri's efficient XML parsing
-- Lazy-load page information when possible
+- Use Nokogiri's efficient XML parsing with CSS selectors
+- ComicInfo.xml files are typically small (<100KB)
+- Focus on code clarity over micro-optimizations
 - Cache parsed values to avoid re-parsing
-- Profile memory usage with large XML files
 
 ## Documentation
 - Maintain comprehensive README with examples
 - Document all public methods with YARD comments
 - Include schema field descriptions in code comments
-- Provide migration guides for schema version differences
+- Support multiple schema versions (1.0, 2.0, 2.1-draft)
 
 ## Future Considerations
-- XML writing/generation capabilities
+- XML writing/generation capabilities (.to_xml method)
+- JSON export (.to_json method)
+- YAML export (.to_yaml method)
 - Schema version detection and migration
-- Streaming parser for very large files
 - CLI tool for ComicInfo manipulation
