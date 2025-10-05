@@ -81,7 +81,7 @@ module ComicInfo
 
         raise Errors::ParseError, "XML parsing failed: #{@doc.errors.first.message}" if @doc.errors.any?
 
-        @root = @doc.at_xpath('//ComicInfo')
+        @root = @doc.at_css('ComicInfo')
         raise Errors::ParseError, 'No ComicInfo root element found' if @root.nil?
       rescue Nokogiri::XML::SyntaxError => e
         raise Errors::ParseError, "Invalid XML syntax: #{e.message}"
@@ -240,15 +240,15 @@ module ComicInfo
     end
 
     def get_field_text field_name
-      element = @root.at_xpath(field_name)
+      element = @root.at_css(field_name)
       element&.text
     end
 
     def parse_pages
-      pages_element = @root.at_xpath('Pages')
+      pages_element = @root.at_css('Pages')
       return [] unless pages_element
 
-      page_elements = pages_element.xpath('Page')
+      page_elements = pages_element.css('Page')
       page_elements.map do |page_element|
         attributes = {}
         page_element.attributes.each do |name, attr|
