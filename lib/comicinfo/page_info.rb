@@ -165,7 +165,7 @@ module ComicInfo
 
       begin
         size = Integer(value)
-        size < 0 ? Enums::DEFAULT_IMAGE_SIZE : size
+        size.negative? ? Enums::DEFAULT_IMAGE_SIZE : size
       rescue ArgumentError
         raise Errors::TypeCoercionError.new('ImageSize', value, 'Integer')
       end
