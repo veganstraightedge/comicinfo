@@ -4,7 +4,7 @@ RSpec.describe ComicInfo::Page do
       page = described_class.new 'Image' => '0', 'Type' => 'Story'
 
       expect(page.image).to be_zero
-      expect(page.type).to  eq 'Story'
+      expect(page.type).to eq 'Story'
     end
 
     it 'raises error when Image attribute is missing' do
@@ -22,12 +22,12 @@ RSpec.describe ComicInfo::Page do
     it 'sets default values for optional attributes' do
       page = described_class.new 'Image' => '5'
 
-      expect(page.type).to         eq 'Story'
-      expect(page.double_page).to  be false
-      expect(page.image_size).to   eq 0
-      expect(page.key).to          eq ''
-      expect(page.bookmark).to     eq ''
-      expect(page.image_width).to  eq(-1)
+      expect(page.type).to eq 'Story'
+      expect(page.double_page).to be false
+      expect(page.image_size).to eq 0
+      expect(page.key).to eq ''
+      expect(page.bookmark).to eq ''
+      expect(page.image_width).to eq(-1)
       expect(page.image_height).to eq(-1)
     end
 
@@ -35,7 +35,7 @@ RSpec.describe ComicInfo::Page do
       page = described_class.new image: '3', type: 'FrontCover', double_page: 'true'
 
       expect(page.image).to eq 3
-      expect(page.type).to  eq 'FrontCover'
+      expect(page.type).to eq 'FrontCover'
       expect(page.double_page).to be true
     end
 
@@ -45,10 +45,10 @@ RSpec.describe ComicInfo::Page do
       one_page   = described_class.new 'Image' => '3', 'DoublePage' => '1'
       zero_page  = described_class.new 'Image' => '4', 'DoublePage' => '0'
 
-      expect(true_page.double_page).to  be true
+      expect(true_page.double_page).to be true
       expect(false_page.double_page).to be false
-      expect(one_page.double_page).to   be true
-      expect(zero_page.double_page).to  be false
+      expect(one_page.double_page).to be true
+      expect(zero_page.double_page).to be false
     end
 
     it 'raises error for invalid boolean values' do
@@ -66,17 +66,17 @@ RSpec.describe ComicInfo::Page do
         inner_cover = described_class.new 'Image' => '2', 'Type' => 'InnerCover'
 
         expect(front_cover.cover?).to be true
-        expect(back_cover.cover?).to  be true
+        expect(back_cover.cover?).to be true
         expect(inner_cover.cover?).to be true
       end
 
       it 'returns false for non-cover page types' do
-        story_page   = described_class.new('Image' => '3', 'Type' => 'Story')
-        ad_page      = described_class.new('Image' => '4', 'Type' => 'Advertisement')
-        deleted_page = described_class.new('Image' => '5', 'Type' => 'Deleted')
+        story_page   = described_class.new 'Image' => '3', 'Type' => 'Story'
+        ad_page      = described_class.new 'Image' => '4', 'Type' => 'Advertisement'
+        deleted_page = described_class.new 'Image' => '5', 'Type' => 'Deleted'
 
-        expect(story_page.cover?).to   be false
-        expect(ad_page.cover?).to      be false
+        expect(story_page.cover?).to be false
+        expect(ad_page.cover?).to be false
         expect(deleted_page.cover?).to be false
       end
     end
@@ -92,8 +92,8 @@ RSpec.describe ComicInfo::Page do
         ad_page      = described_class.new 'Image' => '4', 'Type' => 'Advertisement'
         deleted_page = described_class.new 'Image' => '5', 'Type' => 'Deleted'
 
-        expect(front_cover.story?).to  be false
-        expect(ad_page.story?).to      be false
+        expect(front_cover.story?).to be false
+        expect(ad_page.story?).to be false
         expect(deleted_page.story?).to be false
       end
     end
@@ -111,8 +111,8 @@ RSpec.describe ComicInfo::Page do
         ad_page     = described_class.new 'Image' => '4', 'Type' => 'Advertisement'
 
         expect(front_cover.deleted?).to be false
-        expect(story_page.deleted?).to  be false
-        expect(ad_page.deleted?).to     be false
+        expect(story_page.deleted?).to be false
+        expect(ad_page.deleted?).to be false
       end
     end
   end
@@ -155,13 +155,13 @@ RSpec.describe ComicInfo::Page do
     let(:page) { described_class.new 'Image' => '1', 'Type' => 'Story Advertisement' }
 
     it 'returns true when page has the specified type' do
-      expect(page.include_type?('Story')).to         be true
+      expect(page.include_type?('Story')).to be true
       expect(page.include_type?('Advertisement')).to be true
     end
 
     it 'returns false when page does not have the specified type' do
       expect(page.include_type?('FrontCover')).to be false
-      expect(page.include_type?('Editorial')).to  be false
+      expect(page.include_type?('Editorial')).to be false
     end
   end
 
@@ -178,58 +178,58 @@ RSpec.describe ComicInfo::Page do
     end
 
     it 'returns partial dimensions when only one is set' do
-      page = described_class.new('Image' => '1', 'ImageWidth' => '1600')
+      page = described_class.new 'Image' => '1', 'ImageWidth' => '1600'
       expect(page.dimensions).to eq(width: 1600, height: nil)
     end
   end
 
   describe '#dimensions_available?' do
     it 'returns true when both dimensions are set' do
-      page = described_class.new('Image' => '1', 'ImageWidth' => '1600', 'ImageHeight' => '2400')
+      page = described_class.new 'Image' => '1', 'ImageWidth' => '1600', 'ImageHeight' => '2400'
       expect(page.dimensions_available?).to be true
     end
 
     it 'returns false when dimensions are not set' do
-      page = described_class.new('Image' => '1')
+      page = described_class.new 'Image' => '1'
       expect(page.dimensions_available?).to be false
     end
 
     it 'returns false when only one dimension is set' do
-      page = described_class.new('Image' => '1', 'ImageWidth' => '1600')
+      page = described_class.new 'Image' => '1', 'ImageWidth' => '1600'
       expect(page.dimensions_available?).to be false
     end
   end
 
   describe '#aspect_ratio' do
     it 'calculates aspect ratio when dimensions are available' do
-      page = described_class.new('Image' => '1', 'ImageWidth' => '1600', 'ImageHeight' => '2400')
+      page = described_class.new 'Image' => '1', 'ImageWidth' => '1600', 'ImageHeight' => '2400'
       expect(page.aspect_ratio).to eq(1600.0 / 2400.0)
     end
 
     it 'returns nil when dimensions are not available' do
-      page = described_class.new('Image' => '1')
+      page = described_class.new 'Image' => '1'
       expect(page.aspect_ratio).to be_nil
     end
 
     it 'returns nil when height is zero' do
-      page = described_class.new('Image' => '1', 'ImageWidth' => '1600', 'ImageHeight' => '0')
+      page = described_class.new 'Image' => '1', 'ImageWidth' => '1600', 'ImageHeight' => '0'
       expect(page.aspect_ratio).to be_nil
     end
   end
 
   describe '#bookmarked?' do
     it 'returns true when bookmark is present' do
-      page = described_class.new('Image' => '1', 'Bookmark' => 'Chapter 1')
+      page = described_class.new 'Image' => '1', 'Bookmark' => 'Chapter 1'
       expect(page.bookmarked?).to be true
     end
 
     it 'returns false when bookmark is empty' do
-      page = described_class.new('Image' => '1', 'Bookmark' => '')
+      page = described_class.new 'Image' => '1', 'Bookmark' => ''
       expect(page.bookmarked?).to be false
     end
 
     it 'returns false when bookmark is not set' do
-      page = described_class.new('Image' => '1')
+      page = described_class.new 'Image' => '1'
       expect(page.bookmarked?).to be false
     end
   end
@@ -249,7 +249,7 @@ RSpec.describe ComicInfo::Page do
         key: 'page-key', bookmark: 'Important Scene', image_width: 1600, image_height: 2400
       }
 
-      expect(full_page.to_h).to eq(expected)
+      expect(full_page.to_h).to eq expected
     end
   end
 
@@ -269,11 +269,11 @@ RSpec.describe ComicInfo::Page do
         'ImageWidth' => '1600', 'ImageHeight' => '2400'
       }
 
-      expect(xml_page.to_xml_attributes).to eq(expected)
+      expect(xml_page.to_xml_attributes).to eq expected
     end
 
     it 'omits default values from XML attributes' do
-      page = described_class.new('Image' => '0')
+      page = described_class.new 'Image' => '0'
 
       expect(page.to_xml_attributes).to eq('Image' => '0')
     end
@@ -281,30 +281,30 @@ RSpec.describe ComicInfo::Page do
 
   describe '#to_s' do
     it 'returns basic string representation' do
-      page = described_class.new('Image' => '5')
+      page = described_class.new 'Image' => '5'
       expect(page.to_s).to eq('Page 5')
     end
 
     it 'includes type when not default' do
-      page = described_class.new('Image' => '5', 'Type' => 'FrontCover')
+      page = described_class.new 'Image' => '5', 'Type' => 'FrontCover'
       expect(page.to_s).to include('Page 5')
       expect(page.to_s).to include('Type: FrontCover')
     end
 
     it 'includes double page indicator' do
-      page = described_class.new('Image' => '5', 'DoublePage' => 'true')
+      page = described_class.new 'Image' => '5', 'DoublePage' => 'true'
       expect(page.to_s).to include('Double')
     end
 
     it 'includes bookmark when present' do
-      page = described_class.new('Image' => '5', 'Bookmark' => 'Chapter Start')
+      page = described_class.new 'Image' => '5', 'Bookmark' => 'Chapter Start'
       expect(page.to_s).to include('Bookmark: Chapter Start')
     end
   end
 
   describe '#inspect' do
     it 'returns detailed inspection string' do
-      page = described_class.new('Image' => '5', 'Type' => 'Story')
+      page = described_class.new 'Image' => '5', 'Type' => 'Story'
       expect(page.inspect).to start_with('#<ComicInfo::Page')
       expect(page.inspect).to include('Page 5')
     end
@@ -362,11 +362,11 @@ RSpec.describe ComicInfo::Page do
 
     describe '#hash' do
       it 'returns same hash for equal pages' do
-        expect(first_page.hash).to eq(duplicate_page.hash)
+        expect(first_page.hash).to eq duplicate_page.hash
       end
 
       it 'returns different hash for different pages' do
-        expect(first_page.hash).not_to eq(different_page.hash)
+        expect(first_page.hash).not_to eq different_page.hash
       end
     end
   end
@@ -374,18 +374,18 @@ RSpec.describe ComicInfo::Page do
   describe 'error handling' do
     it 'validates comic page type enum values' do
       expect do
-        described_class.new('Image' => '1', 'Type' => 'InvalidType')
+        described_class.new 'Image' => '1', 'Type' => 'InvalidType'
       end.to raise_error(ComicInfo::Errors::InvalidEnumError)
     end
 
     it 'handles negative image size gracefully' do
-      page = described_class.new('Image' => '1', 'ImageSize' => '-1000')
-      expect(page.image_size).to eq(0) # Default value for negative sizes
+      page = described_class.new 'Image' => '1', 'ImageSize' => '-1000'
+      expect(page.image_size).to eq 0 # Default value for negative sizes
     end
 
     it 'raises error for invalid integer attributes' do
       expect do
-        described_class.new('Image' => '1', 'ImageSize' => 'not_a_number')
+        described_class.new 'Image' => '1', 'ImageSize' => 'not_a_number'
       end.to raise_error(ComicInfo::Errors::TypeCoercionError)
     end
   end
@@ -399,13 +399,13 @@ RSpec.describe ComicInfo::Page do
 
       valid_types.each do |type|
         expect do
-          described_class.new('Image' => '1', 'Type' => type)
+          described_class.new 'Image' => '1', 'Type' => type
         end.not_to raise_error
       end
     end
 
     it 'handles space-separated type lists' do
-      page = described_class.new('Image' => '1', 'Type' => 'Story Advertisement Editorial')
+      page = described_class.new 'Image' => '1', 'Type' => 'Story Advertisement Editorial'
       expect(page.types).to eq(%w[Story Advertisement Editorial])
       page.types.each do |type|
         expect(page.include_type?(type)).to be true

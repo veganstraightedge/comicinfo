@@ -1,11 +1,8 @@
-require 'json'
-require 'yaml'
-
 RSpec.describe ComicInfo::Issue do
   describe '.load' do
     context 'with valid file path' do
       it 'loads a minimal ComicInfo.xml file' do
-        comic = load_fixture('valid_minimal.xml')
+        comic = load_fixture 'valid_minimal.xml'
 
         expect(comic).to be_a described_class
         expect(comic.title).to eq 'Minimal Comic'
@@ -14,7 +11,7 @@ RSpec.describe ComicInfo::Issue do
       end
 
       it 'loads a complete ComicInfo.xml file' do
-        comic = load_fixture('valid_complete.xml')
+        comic = load_fixture 'valid_complete.xml'
 
         expect(comic).to be_a described_class
         expect(comic.title).to eq 'The Amazing Spider-Man'
@@ -26,14 +23,14 @@ RSpec.describe ComicInfo::Issue do
 
       it "raises FileError when file doesn't exist" do
         expect do
-          described_class.load 'nonexistent.xml'
+          described_class.load 'non_existent_file.xml'
         end.to raise_error ComicInfo::Errors::FileError
       end
     end
 
     context 'with XML string' do
       it 'loads from XML string content' do
-        xml_content = fixture_file('valid_minimal.xml')
+        xml_content = fixture_file 'valid_minimal.xml'
         comic = described_class.load(xml_content)
 
         expect(comic).to be_a described_class
@@ -42,31 +39,29 @@ RSpec.describe ComicInfo::Issue do
 
       it 'raises ParseError with malformed XML' do
         malformed_xml = '<ComicInfo><Title>Test</ComicInfo>'
-        expect do
-          described_class.load malformed_xml
-        end.to raise_error ComicInfo::Errors::ParseError
+
+        expect { described_class.load malformed_xml }.to raise_error ComicInfo::Errors::ParseError
       end
     end
   end
 
   describe '.new' do
     it 'creates instance from XML string' do
-      xml_content = fixture_file('valid_minimal.xml')
-      comic = described_class.new(xml_content)
+      xml_content = fixture_file 'valid_minimal.xml'
+      comic = described_class.new xml_content
 
       expect(comic).to be_a described_class
       expect(comic.title).to eq 'Minimal Comic'
     end
 
     it 'raises ParseError with invalid XML' do
-      expect do
-        described_class.new('<invalid>xml')
-      end.to raise_error(ComicInfo::Errors::ParseError)
+      invalid_xml = '<invalid'
+      expect { described_class.new invalid_xml }.to raise_error ComicInfo::Errors::ParseError
     end
   end
 
   describe 'basic string fields' do
-    let(:complete_comic) { load_fixture('valid_complete.xml') }
+    let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
     it 'returns title' do
       expect(complete_comic.title).to eq 'The Amazing Spider-Man'
@@ -98,7 +93,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'creator fields' do
-    let(:complete_comic) { load_fixture('valid_complete.xml') }
+    let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
     it 'returns writer' do
       expect(complete_comic.writer).to eq 'Dan Slott, Christos Gage'
@@ -134,7 +129,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'publication fields' do
-    let(:complete_comic) { load_fixture('valid_complete.xml') }
+    let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
     it 'returns publisher' do
       expect(complete_comic.publisher).to eq 'Marvel Comics'
@@ -162,7 +157,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'integer fields' do
-    let(:complete_comic) { load_fixture('valid_complete.xml') }
+    let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
     it 'returns count as integer' do
       expect(complete_comic.count).to eq 600
@@ -194,7 +189,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'enum fields' do
-    let(:complete_comic) { load_fixture('valid_complete.xml') }
+    let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
     it 'returns black and white enum' do
       expect(complete_comic.black_and_white).to eq 'No'
@@ -210,56 +205,59 @@ RSpec.describe ComicInfo::Issue do
 
     context 'with invalid enum values' do
       it 'raises InvalidEnumError for invalid BlackAndWhite' do
+        xml_with_invalid_enum = <<~XML
+          <?xml version="1.0" encoding="utf-8"?>
+          <ComicInfo>
+            <BlackAndWhite>Maybe</BlackAndWhite>
+          </ComicInfo>
+        XML
+
         expect do
-          xml_with_invalid_enum = <<~XML
-            <?xml version="1.0" encoding="utf-8"?>
-            <ComicInfo>
-              <BlackAndWhite>Maybe</BlackAndWhite>
-            </ComicInfo>
-          XML
-          described_class.new(xml_with_invalid_enum)
-        end.to raise_error(ComicInfo::Errors::InvalidEnumError)
+          described_class.new xml_with_invalid_enum
+        end.to raise_error ComicInfo::Errors::InvalidEnumError
       end
     end
   end
 
   describe 'decimal fields' do
-    let(:complete_comic) { load_fixture('valid_complete.xml') }
+    let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
     it 'returns community rating as float' do
       expect(complete_comic.community_rating).to eq 4.25
-      expect(complete_comic.community_rating).to be_a(Float)
+      expect(complete_comic.community_rating).to be_a Float
     end
 
     context 'with invalid rating values' do
       it 'raises RangeError for rating above 5.0' do
+        xml_with_invalid_rating = <<~XML
+          <?xml version="1.0" encoding="utf-8"?>
+          <ComicInfo>
+            <CommunityRating>6.0</CommunityRating>
+          </ComicInfo>
+        XML
+
         expect do
-          xml_with_invalid_rating = <<~XML
-            <?xml version="1.0" encoding="utf-8"?>
-            <ComicInfo>
-              <CommunityRating>6.0</CommunityRating>
-            </ComicInfo>
-          XML
-          described_class.new(xml_with_invalid_rating)
-        end.to raise_error(ComicInfo::Errors::RangeError)
+          described_class.new xml_with_invalid_rating
+        end.to raise_error ComicInfo::Errors::RangeError
       end
 
       it 'raises RangeError for negative rating' do
+        xml_with_invalid_rating = <<~XML
+          <?xml version="1.0" encoding="utf-8"?>
+          <ComicInfo>
+            <CommunityRating>-1.0</CommunityRating>
+          </ComicInfo>
+        XML
+
         expect do
-          xml_with_invalid_rating = <<~XML
-            <?xml version="1.0" encoding="utf-8"?>
-            <ComicInfo>
-              <CommunityRating>-1.0</CommunityRating>
-            </ComicInfo>
-          XML
-          described_class.new(xml_with_invalid_rating)
+          described_class.new xml_with_invalid_rating
         end.to raise_error(ComicInfo::Errors::RangeError)
       end
     end
   end
 
   describe 'multi-value fields' do
-    let(:complete_comic) { load_fixture('valid_complete.xml') }
+    let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
     describe 'singular methods (return strings)' do
       it 'returns character as comma-separated string' do
@@ -323,21 +321,21 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'pages array' do
-    let(:complete_comic) { load_fixture('valid_complete.xml') }
+    let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
     it 'returns array of ComicPageInfo objects' do
-      expect(complete_comic.pages).to be_an(Array)
+      expect(complete_comic.pages).to        be_an Array
       expect(complete_comic.pages.length).to eq(12)
-      expect(complete_comic.pages.first).to be_a(ComicInfo::Page)
+      expect(complete_comic.pages.first).to  be_a(ComicInfo::Page)
     end
 
     it 'parses page attributes correctly' do
       first_page = complete_comic.pages.first
-      expect(first_page.image).to eq 0
-      expect(first_page.type).to eq 'FrontCover'
-      expect(first_page.double_page).to be false
-      expect(first_page.image_size).to eq(1_024_000)
-      expect(first_page.image_width).to eq(1600)
+      expect(first_page.image).to        eq 0
+      expect(first_page.type).to         eq 'FrontCover'
+      expect(first_page.double_page).to  be false
+      expect(first_page.image_size).to   eq(1_024_000)
+      expect(first_page.image_width).to  eq(1600)
       expect(first_page.image_height).to eq(2400)
     end
 
@@ -349,57 +347,61 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'default values' do
-    let(:minimal_comic) { load_fixture('valid_minimal.xml') }
+    let(:minimal_comic) { load_fixture 'valid_minimal.xml' }
 
     it 'returns default integer value for missing fields' do
-      expect(minimal_comic.count).to eq(-1)
+      expect(minimal_comic.count).to  eq(-1)
       expect(minimal_comic.volume).to eq(-1)
-      expect(minimal_comic.year).to eq(-1)
+      expect(minimal_comic.year).to   eq(-1)
     end
 
     it 'returns default string value for missing fields' do
-      expect(minimal_comic.summary).to eq ''
-      expect(minimal_comic.notes).to eq ''
+      expect(minimal_comic.summary).to   eq ''
+      expect(minimal_comic.notes).to     eq ''
       expect(minimal_comic.publisher).to eq ''
     end
 
     it 'returns default enum value for missing fields' do
       expect(minimal_comic.black_and_white).to eq 'Unknown'
-      expect(minimal_comic.manga).to eq 'Unknown'
-      expect(minimal_comic.age_rating).to eq 'Unknown'
+      expect(minimal_comic.manga).to           eq 'Unknown'
+      expect(minimal_comic.age_rating).to      eq 'Unknown'
     end
   end
 
   describe 'edge cases' do
     context 'with empty fields' do
-      let(:empty_comic) { load_fixture('edge_cases/empty_fields.xml') }
+      let(:empty_comic) { load_fixture 'edge_cases/empty_fields.xml' }
 
       it 'handles empty string fields' do
-        expect(empty_comic.title).to eq('')
-        expect(empty_comic.series).to eq('')
+        expect(empty_comic.title).to  eq ''
+        expect(empty_comic.series).to eq ''
+        expect(empty_comic.notes).to  eq ''
       end
 
       it 'handles empty integer fields' do
-        expect(empty_comic.count).to eq(-1)
-        expect(empty_comic.year).to eq(-1)
+        expect(empty_comic.count).to  eq(-1)
+        expect(empty_comic.volume).to eq(-1)
+        expect(empty_comic.year).to   eq(-1)
       end
 
       it 'handles empty enum fields' do
-        expect(empty_comic.black_and_white).to eq('Unknown')
+        expect(empty_comic.manga).to eq 'Unknown'
       end
     end
 
     context 'with Unicode and special characters' do
-      let(:unicode_comic) { load_fixture('edge_cases/unicode_special_chars.xml') }
+      let(:unicode_comic) { load_fixture 'edge_cases/unicode_special_chars.xml' }
 
       it 'preserves Unicode characters in title' do
-        expect(unicode_comic.title).to include '漫画'
+        expect(unicode_comic.title).to  include '漫画'
         expect(unicode_comic.series).to include '🦸‍♂️'
       end
 
       it 'handles XML entities correctly' do
-        expect(unicode_comic.title).to include '&'
-        expect(unicode_comic.title).to include '"'
+        expect(unicode_comic.title).to   include '"'
+        expect(unicode_comic.summary).to include '&'
+        expect(unicode_comic.summary).to include '<'
+        expect(unicode_comic.summary).to include '>'
       end
 
       it 'preserves international characters in creator names' do
@@ -409,9 +411,10 @@ RSpec.describe ComicInfo::Issue do
     end
 
     context 'with manga properties' do
-      let(:manga_comic) do
-        file_path = File.join(__dir__, 'fixtures', 'edge_cases', 'manga_rtl.xml')
-        described_class.load(file_path)
+      let(:manga_comic) { load_fixture 'edge_cases/manga_rtl.xml' }
+
+      it 'identifies as manga' do
+        expect(manga_comic.manga).to eq 'YesAndRightToLeft'
       end
 
       it 'handles manga reading direction' do
@@ -429,9 +432,9 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'convenience methods' do
-    let(:complete_comic) { load_fixture('valid_complete.xml') }
+    let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
-    let(:manga_comic) { load_fixture('edge_cases/manga_rtl.xml') }
+    let(:manga_comic) { load_fixture 'edge_cases/manga_rtl.xml' }
 
     describe '#manga?' do
       it 'returns true for manga comics' do
@@ -445,24 +448,28 @@ RSpec.describe ComicInfo::Issue do
 
     describe '#right_to_left?' do
       it 'returns true for right-to-left manga' do
-        manga_comic = load_fixture('edge_cases/manga_rtl.xml')
+        manga_comic = load_fixture 'edge_cases/manga_rtl.xml'
+
         expect(manga_comic.right_to_left?).to be true
       end
 
       it 'returns false for left-to-right comics' do
-        regular_comic = load_fixture('valid_complete.xml')
+        regular_comic = load_fixture 'valid_complete.xml'
+
         expect(regular_comic.right_to_left?).to be false
       end
     end
 
     describe '#black_and_white?' do
       it 'returns true for black and white comics' do
-        bw_comic = load_fixture('edge_cases/manga_rtl.xml')
+        bw_comic = load_fixture 'edge_cases/manga_rtl.xml'
+
         expect(bw_comic.black_and_white?).to be true
       end
 
       it 'returns false for color comics' do
-        color_comic = load_fixture('valid_complete.xml')
+        color_comic = load_fixture 'valid_complete.xml'
+
         expect(color_comic.black_and_white?).to be false
       end
     end
@@ -473,7 +480,8 @@ RSpec.describe ComicInfo::Issue do
       end
 
       it 'returns false when no pages are present' do
-        minimal_comic = load_fixture('valid_minimal.xml')
+        minimal_comic = load_fixture 'valid_minimal.xml'
+
         expect(minimal_comic.pages?).to be false
       end
     end
@@ -481,8 +489,8 @@ RSpec.describe ComicInfo::Issue do
     describe '#cover_pages' do
       it 'returns only cover pages' do
         covers = complete_comic.cover_pages
-        expect(covers).to be_an(Array)
-        expect(covers.length).to eq(3) # FrontCover, InnerCover, and BackCover
+        expect(covers).to                be_an Array
+        expect(covers.length).to         eq(3) # FrontCover, InnerCover, and BackCover
         expect(covers.all?(&:cover?)).to be true
       end
     end
@@ -490,7 +498,7 @@ RSpec.describe ComicInfo::Issue do
     describe '#story_pages' do
       it 'returns only story pages' do
         stories = complete_comic.story_pages
-        expect(stories).to be_an(Array)
+        expect(stories).to                be_an Array
         expect(stories.all?(&:story?)).to be true
       end
     end
@@ -498,28 +506,30 @@ RSpec.describe ComicInfo::Issue do
 
   describe 'validation' do
     it 'validates date components' do
+      xml_with_invalid_date = <<~XML
+        <?xml version="1.0" encoding="utf-8"?>
+        <ComicInfo>
+          <Month>13</Month>
+          <Day>32</Day>
+        </ComicInfo>
+      XML
+
       expect do
-        xml_with_invalid_date = <<~XML
-          <?xml version="1.0" encoding="utf-8"?>
-          <ComicInfo>
-            <Month>13</Month>
-            <Day>32</Day>
-          </ComicInfo>
-        XML
-        described_class.new(xml_with_invalid_date)
+        described_class.new xml_with_invalid_date
       end.to raise_error(ComicInfo::Errors::RangeError)
     end
 
     it 'validates integer type coercion' do
+      xml_with_invalid_count = <<~XML
+        <?xml version="1.0" encoding="utf-8"?>
+        <ComicInfo>
+          <Count>not_a_number</Count>
+        </ComicInfo>
+      XML
+
       expect do
-        xml_with_invalid_integer = <<~XML
-          <?xml version="1.0" encoding="utf-8"?>
-          <ComicInfo>
-            <Count>not_a_number</Count>
-          </ComicInfo>
-        XML
-        described_class.new xml_with_invalid_integer
-      end.to raise_error ComicInfo::Errors::TypeCoercionError
+        described_class.new xml_with_invalid_count
+      end.to raise_error(ComicInfo::Errors::TypeCoercionError)
     end
   end
 
@@ -531,40 +541,47 @@ RSpec.describe ComicInfo::Issue do
           <BlackAndWhite>Maybe</BlackAndWhite>
         </ComicInfo>
       XML
-      described_class.new xml_with_invalid_enum
-    rescue ComicInfo::Errors::InvalidEnumError => e
-      expect(e.field).to eq 'BlackAndWhite'
-      expect(e.value).to eq 'Maybe'
-      expect(e.valid_values).to include 'Yes', 'No', 'Unknown'
+
+      expect do
+        described_class.new xml_with_invalid_enum
+      rescue ComicInfo::Errors::InvalidEnumError => e
+        expect(e.field).to eq 'BlackAndWhite'
+        expect(e.value).to eq 'Maybe'
+        expect(e.valid_values).to include 'Yes', 'No', 'Unknown'
+      end
     end
 
     it 'provides detailed error information for range validation' do
       xml_with_invalid_rating = <<~XML
         <?xml version="1.0" encoding="utf-8"?>
         <ComicInfo>
-          <CommunityRating>10.0</CommunityRating>
+          <CommunityRating>6.0</CommunityRating>
         </ComicInfo>
       XML
-      described_class.new xml_with_invalid_rating
-    rescue ComicInfo::Errors::RangeError => e
-      expect(e.field).to eq 'CommunityRating'
-      expect(e.value).to eq 10.0
-      expect(e.min).to eq 0.0
-      expect(e.max).to eq 5.0
+
+      expect do
+        described_class.new xml_with_invalid_rating
+      rescue ComicInfo::Errors::RangeError => e
+        expect(e.field).to eq 'CommunityRating'
+        expect(e.value).to eq 10.0
+        expect(e.min).to   eq 0.0
+        expect(e.max).to   eq 5.0
+      end
     end
   end
 
   describe 'JSON serialization' do
-    let(:complete_comic) { load_fixture('valid_complete.xml') }
+    let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
     describe '#to_json' do
       it 'returns valid JSON string' do
         json_string = complete_comic.to_json
-        expect(json_string).to be_a String
+        expect(json_string).to be_a(String)
+        expect { JSON.parse(json_string) }.not_to raise_error
 
-        # Verify it's valid JSON by parsing it back
         parsed = JSON.parse json_string
         expect(parsed).to be_a Hash
+        expect(parsed['title']).to eq 'The Amazing Spider-Man'
       end
 
       it 'includes all expected fields' do
@@ -572,84 +589,152 @@ RSpec.describe ComicInfo::Issue do
         parsed = JSON.parse json_string
 
         # Test basic fields
-        expect(parsed['title']).to eq 'The Amazing Spider-Man'
+        expect(parsed['title']).to  eq 'The Amazing Spider-Man'
         expect(parsed['series']).to eq 'The Amazing Spider-Man'
-        expect(parsed['count']).to eq 600
+        expect(parsed['count']).to  eq 600
         expect(parsed['volume']).to eq 3
         expect(parsed['community_rating']).to eq 4.25
 
         # Test both singular and plural forms of multi-value fields
-        expect(parsed['character']).to eq 'Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May'
+        expect(parsed['character']).to  eq 'Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May'
         expect(parsed['characters']).to eq ['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May']
-        expect(parsed['genres']).to eq %w[Superhero Action Adventure]
+        expect(parsed['genres']).to     eq %w[Superhero Action Adventure]
 
         # Test pages array
         expect(parsed['pages']).to be_an Array
         expect(parsed['pages'].first).to have_key 'image'
         expect(parsed['pages'].first).to have_key 'type'
+
+        expect(parsed).to have_key 'title'
+        expect(parsed).to have_key 'series'
+        expect(parsed).to have_key 'number'
+        expect(parsed).to have_key 'count'
+        expect(parsed).to have_key 'volume'
+        expect(parsed).to have_key 'summary'
+        expect(parsed).to have_key 'notes'
+        expect(parsed).to have_key 'year'
+        expect(parsed).to have_key 'month'
+        expect(parsed).to have_key 'day'
+        expect(parsed).to have_key 'writer'
+        expect(parsed).to have_key 'penciller'
+        expect(parsed).to have_key 'inker'
+        expect(parsed).to have_key 'colorist'
+        expect(parsed).to have_key 'letterer'
+        expect(parsed).to have_key 'cover_artist'
+        expect(parsed).to have_key 'editor'
+        expect(parsed).to have_key 'publisher'
+        expect(parsed).to have_key 'imprint'
+        expect(parsed).to have_key 'genre'
+        expect(parsed).to have_key 'web'
+        expect(parsed).to have_key 'page_count'
+        expect(parsed).to have_key 'language_iso'
+        expect(parsed).to have_key 'format'
+        expect(parsed).to have_key 'black_and_white'
+        expect(parsed).to have_key 'manga'
+        expect(parsed).to have_key 'characters'
+        expect(parsed).to have_key 'teams'
+        expect(parsed).to have_key 'locations'
+        expect(parsed).to have_key 'story_arcs'
+        expect(parsed).to have_key 'story_arc_numbers'
+        expect(parsed).to have_key 'genres'
+        expect(parsed).to have_key 'web_urls'
+        expect(parsed).to have_key 'pages'
+
+        expect(parsed['pages']).to      be_an Array
+        expect(parsed['characters']).to be_an Array
+        expect(parsed['genres']).to     be_an Array
       end
     end
 
     describe '#to_h' do
       it 'returns hash representation' do
         hash = complete_comic.to_h
-        expect(hash).to be_a Hash
-        expect(hash[:title]).to eq 'The Amazing Spider-Man'
-        expect(hash[:characters]).to eq ['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May']
+        expect(hash).to         be_a Hash
         expect(hash[:pages]).to be_an Array
+
+        expect(hash[:title]).to  eq 'The Amazing Spider-Man'
+        expect(hash[:series]).to eq 'The Amazing Spider-Man'
       end
 
       it 'includes both singular and plural forms' do
         hash = complete_comic.to_h
 
-        # Both forms should be present
-        expect(hash[:character]).to be_a String
+        expect(hash).to have_key :character
+        expect(hash).to have_key :characters
+
+        expect(hash[:character]).to  be_a String
         expect(hash[:characters]).to be_an Array
-        expect(hash[:genre]).to be_a String
-        expect(hash[:genres]).to be_an Array
+
+        expect(hash[:characters]).to eq ['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May']
+        expect(hash[:story_arc_numbers]).to eq %w[1 5]
       end
     end
 
     describe '#to_yaml' do
       it 'returns valid YAML string' do
         yaml_string = complete_comic.to_yaml
-        expect(yaml_string).to be_a String
 
         # Verify it's valid YAML by parsing it back
         parsed = YAML.safe_load yaml_string, permitted_classes: [Symbol]
         expect(parsed).to be_a Hash
+
+        expect(parsed[:title]).to eq 'The Amazing Spider-Man'
       end
 
       it 'includes all expected fields' do
         yaml_string = complete_comic.to_yaml
         parsed = YAML.safe_load yaml_string, permitted_classes: [Symbol]
 
-        # Test basic fields
-        expect(parsed[:title]).to eq 'The Amazing Spider-Man'
-        expect(parsed[:series]).to eq 'The Amazing Spider-Man'
-        expect(parsed[:count]).to eq 600
-        expect(parsed[:volume]).to eq 3
-        expect(parsed[:community_rating]).to eq 4.25
+        expect(parsed).to have_key :title
+        expect(parsed).to have_key :series
+        expect(parsed).to have_key :number
+        expect(parsed).to have_key :count
+        expect(parsed).to have_key :volume
+        expect(parsed).to have_key :summary
+        expect(parsed).to have_key :notes
+        expect(parsed).to have_key :year
+        expect(parsed).to have_key :month
+        expect(parsed).to have_key :day
+        expect(parsed).to have_key :writer
+        expect(parsed).to have_key :penciller
+        expect(parsed).to have_key :inker
+        expect(parsed).to have_key :colorist
+        expect(parsed).to have_key :letterer
+        expect(parsed).to have_key :cover_artist
+        expect(parsed).to have_key :editor
+        expect(parsed).to have_key :publisher
+        expect(parsed).to have_key :imprint
+        expect(parsed).to have_key :genre
+        expect(parsed).to have_key :web
+        expect(parsed).to have_key :page_count
+        expect(parsed).to have_key :language_iso
+        expect(parsed).to have_key :format
+        expect(parsed).to have_key :black_and_white
+        expect(parsed).to have_key :manga
+        expect(parsed).to have_key :characters
+        expect(parsed).to have_key :teams
+        expect(parsed).to have_key :locations
+        expect(parsed).to have_key :story_arcs
+        expect(parsed).to have_key :story_arc_numbers
+        expect(parsed).to have_key :genres
+        expect(parsed).to have_key :web_urls
+        expect(parsed).to have_key :pages
 
-        # Test both singular and plural forms of multi-value fields
-        expect(parsed[:character]).to eq 'Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May'
-        expect(parsed[:characters]).to eq ['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May']
-        expect(parsed[:genres]).to eq %w[Superhero Action Adventure]
-
-        # Test pages array
-        expect(parsed[:pages]).to be_an Array
-        expect(parsed[:pages].first).to have_key :image
-        expect(parsed[:pages].first).to have_key :type
+        expect(parsed[:pages]).to      be_an Array
+        expect(parsed[:characters]).to be_an Array
+        expect(parsed[:genres]).to     be_an Array
       end
 
       it 'produces human-readable YAML format' do
         yaml_string = complete_comic.to_yaml
-
-        # YAML should contain human-readable field names
-        expect(yaml_string).to include 'title:'
-        expect(yaml_string).to include 'series:'
+        expect(yaml_string).to include 'title: The Amazing Spider-Man'
+        expect(yaml_string).to include 'series: The Amazing Spider-Man'
+        expect(yaml_string).to include 'count: 600'
+        expect(yaml_string).to include 'volume: 3'
         expect(yaml_string).to include 'characters:'
         expect(yaml_string).to include '- Spider-Man'
+        expect(yaml_string).to include '- Peter Parker'
+        expect(yaml_string).to include 'pages:'
       end
     end
   end

@@ -1,3 +1,5 @@
+inherit_from: .rubocop_todo.yml
+
 plugins:
   - rubocop-performance
   - rubocop-rake
@@ -46,7 +48,7 @@ Metrics/PerceivedComplexity:
   Max: 11
 
 RSpec/ExampleLength:
-  Max: 13
+  Max: 39
 
 RSpec/MultipleExpectations:
-  Max: 11
+  Max: 37

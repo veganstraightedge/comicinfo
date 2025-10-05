@@ -182,25 +182,25 @@ RSpec.describe ComicInfo::Issue do
   describe '.load' do
     context 'with valid file path' do
       it 'loads from fixture' do
-        comic = load_fixture('valid_minimal.xml')
-        expect(comic.title).to eq('Expected Title')
+        comic = load_fixture 'valid_minimal.xml'
+        expect(comic.title).to eq 'Expected Title'
       end
     end
-    
+
     context 'with XML string' do
       it 'parses XML content' do
-        xml_content = fixture_file('valid_complete.xml')
-        comic = described_class.new(xml_content)
-        expect(comic.series).to eq('Expected Series')
+        xml_content = fixture_file 'valid_complete.xml'
+        comic = described_class.new xml_content
+        expect(comic.series).to eq 'Expected Series'
       end
     end
   end
-  
+
   describe 'multi-value fields' do
     describe 'singular methods (return strings)' do
       # Test comma-separated string values
     end
-    
+
     describe 'plural methods (return arrays)' do
       # Test array conversion
     end
