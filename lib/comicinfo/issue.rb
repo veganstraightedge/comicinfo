@@ -2,6 +2,7 @@
 
 require 'nokogiri'
 require 'date'
+require 'json'
 require_relative 'enums'
 require_relative 'errors'
 require_relative 'page'
@@ -165,6 +166,66 @@ module ComicInfo
       return [] if @web.empty?
 
       @web.split(/\s+/)
+    end
+
+    # Convert to JSON representation
+    def to_json(*)
+      to_h.to_json(*)
+    end
+
+    # Convert to hash representation for JSON serialization
+    def to_h
+      {
+        title:                  @title,
+        series:                 @series,
+        number:                 @number,
+        count:                  @count,
+        volume:                 @volume,
+        alternate_series:       @alternate_series,
+        alternate_number:       @alternate_number,
+        alternate_count:        @alternate_count,
+        summary:                @summary,
+        notes:                  @notes,
+        year:                   @year,
+        month:                  @month,
+        day:                    @day,
+        writer:                 @writer,
+        penciller:              @penciller,
+        inker:                  @inker,
+        colorist:               @colorist,
+        letterer:               @letterer,
+        cover_artist:           @cover_artist,
+        editor:                 @editor,
+        translator:             @translator,
+        publisher:              @publisher,
+        imprint:                @imprint,
+        genre:                  @genre,
+        genres:                 genres,
+        web:                    @web,
+        web_urls:               web_urls,
+        page_count:             @page_count,
+        language_iso:           @language_iso,
+        format:                 @format,
+        black_and_white:        @black_and_white,
+        manga:                  @manga,
+        character:              @character,
+        characters:             characters,
+        team:                   @team,
+        teams:                  teams,
+        location:               @location,
+        locations:              locations,
+        scan_information:       @scan_information,
+        story_arc:              @story_arc,
+        story_arcs:             story_arcs,
+        story_arc_number:       @story_arc_number,
+        story_arc_numbers:      story_arc_numbers,
+        series_group:           @series_group,
+        age_rating:             @age_rating,
+        main_character_or_team: @main_character_or_team,
+        community_rating:       @community_rating,
+        review:                 @review,
+        pages:                  @pages.map(&:to_h)
+      }.compact
     end
 
     private

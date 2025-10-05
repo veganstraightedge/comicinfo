@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json'
+
 RSpec.describe ComicInfo::Issue do
   describe '.load' do
     context 'with valid file path' do
@@ -550,6 +552,63 @@ RSpec.describe ComicInfo::Issue do
       expect(e.value).to eq(10.0)
       expect(e.min).to eq(0.0)
       expect(e.max).to eq(5.0)
+    end
+  end
+
+  describe 'JSON serialization' do
+    let(:complete_comic) { load_fixture('valid_complete.xml') }
+
+    describe '#to_json' do
+      it 'returns valid JSON string' do
+        json_string = complete_comic.to_json
+        expect(json_string).to be_a(String)
+
+        # Verify it's valid JSON by parsing it back
+        parsed = JSON.parse(json_string)
+        expect(parsed).to be_a(Hash)
+      end
+
+      it 'includes all expected fields' do
+        json_string = complete_comic.to_json
+        parsed = JSON.parse(json_string)
+
+        # Test basic fields
+        expect(parsed['title']).to eq('The Amazing Spider-Man')
+        expect(parsed['series']).to eq('The Amazing Spider-Man')
+        expect(parsed['count']).to eq(600)
+        expect(parsed['volume']).to eq(3)
+        expect(parsed['community_rating']).to eq(4.25)
+
+        # Test both singular and plural forms of multi-value fields
+        expect(parsed['character']).to eq('Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May')
+        expect(parsed['characters']).to eq(['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May'])
+        expect(parsed['genres']).to eq(%w[Superhero Action Adventure])
+
+        # Test pages array
+        expect(parsed['pages']).to be_an(Array)
+        expect(parsed['pages'].first).to have_key('image')
+        expect(parsed['pages'].first).to have_key('type')
+      end
+    end
+
+    describe '#to_h' do
+      it 'returns hash representation' do
+        hash = complete_comic.to_h
+        expect(hash).to be_a(Hash)
+        expect(hash[:title]).to eq('The Amazing Spider-Man')
+        expect(hash[:characters]).to eq(['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May'])
+        expect(hash[:pages]).to be_an(Array)
+      end
+
+      it 'includes both singular and plural forms' do
+        hash = complete_comic.to_h
+
+        # Both forms should be present
+        expect(hash[:character]).to be_a(String)
+        expect(hash[:characters]).to be_an(Array)
+        expect(hash[:genre]).to be_a(String)
+        expect(hash[:genres]).to be_an(Array)
+      end
     end
   end
 end
