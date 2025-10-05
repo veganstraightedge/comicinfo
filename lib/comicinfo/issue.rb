@@ -14,8 +14,8 @@ module ComicInfo
     attr_reader :title, :series, :number, :alternate_series, :alternate_number,
                 :summary, :notes, :writer, :penciller, :inker, :colorist,
                 :letterer, :cover_artist, :editor, :translator, :publisher,
-                :imprint, :genre, :web, :language_iso, :format, :characters,
-                :teams, :locations, :scan_information, :story_arc, :story_arc_number,
+                :imprint, :genre, :web, :language_iso, :format, :character,
+                :team, :location, :scan_information, :story_arc, :story_arc_number,
                 :series_group, :main_character_or_team, :review
 
     # Integer fields from ComicInfo schema
@@ -136,32 +136,32 @@ module ComicInfo
       end
     end
 
-    # Convert multi-value fields to arrays
-    def genre_list
+    # Plural methods that return arrays
+    def genres
       split_comma_separated(@genre)
     end
 
-    def characters_list
-      split_comma_separated(@characters)
+    def characters
+      split_comma_separated(@character)
     end
 
-    def teams_list
-      split_comma_separated(@teams)
+    def teams
+      split_comma_separated(@team)
     end
 
-    def locations_list
-      split_comma_separated(@locations)
+    def locations
+      split_comma_separated(@location)
     end
 
-    def story_arc_list
+    def story_arcs
       split_comma_separated(@story_arc)
     end
 
-    def story_arc_number_list
+    def story_arc_numbers
       split_comma_separated(@story_arc_number)
     end
 
-    def web_list
+    def web_urls
       return [] if @web.empty?
 
       @web.split(/\s+/)
@@ -197,10 +197,10 @@ module ComicInfo
       @language_iso = get_string_field('LanguageISO')
       @format = get_string_field('Format')
 
-      # Multi-value string fields
-      @characters = get_string_field('Characters')
-      @teams = get_string_field('Teams')
-      @locations = get_string_field('Locations')
+      # Multi-value string fields (singular names for string values)
+      @character = get_string_field('Characters')
+      @team = get_string_field('Teams')
+      @location = get_string_field('Locations')
       @scan_information = get_string_field('ScanInformation')
       @story_arc = get_string_field('StoryArc')
       @story_arc_number = get_string_field('StoryArcNumber')

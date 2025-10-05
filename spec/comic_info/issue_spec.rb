@@ -148,7 +148,7 @@ RSpec.describe ComicInfo::Issue do
     end
 
     it 'returns web' do
-      expect(complete_comic.web).to include('marvel.com')
+      expect(complete_comic.web).to eq('https://marvel.com/comics/issue/12345 https://comicvine.gamespot.com/amazing-spider-man-1/4000-67890/')
     end
 
     it 'returns language ISO' do
@@ -260,24 +260,64 @@ RSpec.describe ComicInfo::Issue do
   describe 'multi-value fields' do
     let(:complete_comic) { load_fixture('valid_complete.xml') }
 
-    it 'returns characters as comma-separated string' do
-      expect(complete_comic.characters).to eq('Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May')
+    describe 'singular methods (return strings)' do
+      it 'returns character as comma-separated string' do
+        expect(complete_comic.character).to eq('Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May')
+      end
+
+      it 'returns team as comma-separated string' do
+        expect(complete_comic.team).to eq('Avengers')
+      end
+
+      it 'returns location as comma-separated string' do
+        expect(complete_comic.location).to eq('New York City, Manhattan, Queens')
+      end
+
+      it 'returns story_arc as comma-separated string' do
+        expect(complete_comic.story_arc).to eq('Brand New Day, Spider-Island')
+      end
+
+      it 'returns story_arc_number as comma-separated string' do
+        expect(complete_comic.story_arc_number).to eq('1, 5')
+      end
+
+      it 'returns genre as comma-separated string' do
+        expect(complete_comic.genre).to eq('Superhero, Action, Adventure')
+      end
+
+      it 'returns web as space-separated string' do
+        expect(complete_comic.web).to eq('https://marvel.com/comics/issue/12345 https://comicvine.gamespot.com/amazing-spider-man-1/4000-67890/')
+      end
     end
 
-    it 'returns teams as comma-separated string' do
-      expect(complete_comic.teams).to eq('Avengers')
-    end
+    describe 'plural methods (return arrays)' do
+      it 'returns characters as array' do
+        expect(complete_comic.characters).to eq(['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May'])
+      end
 
-    it 'returns locations as comma-separated string' do
-      expect(complete_comic.locations).to eq('New York City, Manhattan, Queens')
-    end
+      it 'returns teams as array' do
+        expect(complete_comic.teams).to eq(['Avengers'])
+      end
 
-    it 'returns story arc as comma-separated string' do
-      expect(complete_comic.story_arc).to eq('Brand New Day, Spider-Island')
-    end
+      it 'returns locations as array' do
+        expect(complete_comic.locations).to eq(['New York City', 'Manhattan', 'Queens'])
+      end
 
-    it 'returns story arc number as comma-separated string' do
-      expect(complete_comic.story_arc_number).to eq('1, 5')
+      it 'returns story_arcs as array' do
+        expect(complete_comic.story_arcs).to eq(['Brand New Day', 'Spider-Island'])
+      end
+
+      it 'returns story_arc_numbers as array' do
+        expect(complete_comic.story_arc_numbers).to eq(%w[1 5])
+      end
+
+      it 'returns genres as array' do
+        expect(complete_comic.genres).to eq(%w[Superhero Action Adventure])
+      end
+
+      it 'returns web_urls as array' do
+        expect(complete_comic.web_urls).to eq(['https://marvel.com/comics/issue/12345', 'https://comicvine.gamespot.com/amazing-spider-man-1/4000-67890/'])
+      end
     end
   end
 
