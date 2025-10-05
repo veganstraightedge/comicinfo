@@ -8,8 +8,7 @@ RSpec.describe ComicInfo do
   describe '.load' do
     context 'with a valid file path' do
       it 'loads a minimal ComicInfo.xml file' do
-        file_path = File.join(__dir__, 'fixtures', 'valid_minimal.xml')
-        comic = described_class.load(file_path)
+        comic = load_fixture('valid_minimal.xml')
 
         expect(comic).to be_a(ComicInfo::Issue)
         expect(comic.title).to eq('Minimal Comic')
@@ -18,8 +17,7 @@ RSpec.describe ComicInfo do
       end
 
       it 'loads a complete ComicInfo.xml file with all fields' do
-        file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-        comic = described_class.load(file_path)
+        comic = load_fixture('valid_complete.xml')
 
         expect(comic).to be_a(ComicInfo::Issue)
         expect(comic.title).to eq('The Amazing Spider-Man')
@@ -47,7 +45,7 @@ RSpec.describe ComicInfo do
 
     context 'with XML string content' do
       it 'loads from XML string' do
-        xml_content = File.read(File.join(__dir__, 'fixtures', 'valid_minimal.xml'))
+        xml_content = fixture_file('valid_minimal.xml')
         comic = described_class.load(xml_content)
 
         expect(comic).to be_a(ComicInfo::Issue)

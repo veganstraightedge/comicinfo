@@ -4,8 +4,7 @@ RSpec.describe ComicInfo::Issue do
   describe '.load' do
     context 'with valid file path' do
       it 'loads a minimal ComicInfo.xml file' do
-        file_path = File.join(__dir__, 'fixtures', 'valid_minimal.xml')
-        comic = described_class.load(file_path)
+        comic = load_fixture('valid_minimal.xml')
 
         expect(comic).to be_a(described_class)
         expect(comic.title).to eq('Minimal Comic')
@@ -14,8 +13,7 @@ RSpec.describe ComicInfo::Issue do
       end
 
       it 'loads a complete ComicInfo.xml file' do
-        file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-        comic = described_class.load(file_path)
+        comic = load_fixture('valid_complete.xml')
 
         expect(comic).to be_a(described_class)
         expect(comic.title).to eq('The Amazing Spider-Man')
@@ -34,7 +32,7 @@ RSpec.describe ComicInfo::Issue do
 
     context 'with XML string' do
       it 'loads from XML string content' do
-        xml_content = File.read(File.join(__dir__, 'fixtures', 'valid_minimal.xml'))
+        xml_content = fixture_file('valid_minimal.xml')
         comic = described_class.load(xml_content)
 
         expect(comic).to be_a(described_class)
@@ -52,7 +50,7 @@ RSpec.describe ComicInfo::Issue do
 
   describe '.new' do
     it 'creates instance from XML string' do
-      xml_content = File.read(File.join(__dir__, 'fixtures', 'valid_minimal.xml'))
+      xml_content = fixture_file('valid_minimal.xml')
       comic = described_class.new(xml_content)
 
       expect(comic).to be_a(described_class)
@@ -67,10 +65,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'basic string fields' do
-    let(:complete_comic) do
-      file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      described_class.load(file_path)
-    end
+    let(:complete_comic) { load_fixture('valid_complete.xml') }
 
     it 'returns title' do
       expect(complete_comic.title).to eq('The Amazing Spider-Man')
@@ -102,10 +97,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'creator fields' do
-    let(:complete_comic) do
-      file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      described_class.load(file_path)
-    end
+    let(:complete_comic) { load_fixture('valid_complete.xml') }
 
     it 'returns writer' do
       expect(complete_comic.writer).to eq('Dan Slott, Christos Gage')
@@ -141,10 +133,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'publication fields' do
-    let(:complete_comic) do
-      file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      described_class.load(file_path)
-    end
+    let(:complete_comic) { load_fixture('valid_complete.xml') }
 
     it 'returns publisher' do
       expect(complete_comic.publisher).to eq('Marvel Comics')
@@ -172,10 +161,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'integer fields' do
-    let(:complete_comic) do
-      file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      described_class.load(file_path)
-    end
+    let(:complete_comic) { load_fixture('valid_complete.xml') }
 
     it 'returns count as integer' do
       expect(complete_comic.count).to eq(600)
@@ -207,10 +193,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'enum fields' do
-    let(:complete_comic) do
-      file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      described_class.load(file_path)
-    end
+    let(:complete_comic) { load_fixture('valid_complete.xml') }
 
     it 'returns black and white enum' do
       expect(complete_comic.black_and_white).to eq('No')
@@ -240,10 +223,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'decimal fields' do
-    let(:complete_comic) do
-      file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      described_class.load(file_path)
-    end
+    let(:complete_comic) { load_fixture('valid_complete.xml') }
 
     it 'returns community rating as float' do
       expect(complete_comic.community_rating).to eq(4.25)
@@ -278,10 +258,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'multi-value fields' do
-    let(:complete_comic) do
-      file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      described_class.load(file_path)
-    end
+    let(:complete_comic) { load_fixture('valid_complete.xml') }
 
     it 'returns characters as comma-separated string' do
       expect(complete_comic.characters).to eq('Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May')
@@ -305,10 +282,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'pages array' do
-    let(:complete_comic) do
-      file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      described_class.load(file_path)
-    end
+    let(:complete_comic) { load_fixture('valid_complete.xml') }
 
     it 'returns array of ComicPageInfo objects' do
       expect(complete_comic.pages).to be_an(Array)
@@ -334,10 +308,7 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'default values' do
-    let(:minimal_comic) do
-      file_path = File.join(__dir__, 'fixtures', 'valid_minimal.xml')
-      described_class.load(file_path)
-    end
+    let(:minimal_comic) { load_fixture('valid_minimal.xml') }
 
     it 'returns default integer value for missing fields' do
       expect(minimal_comic.count).to eq(-1)
@@ -360,10 +331,7 @@ RSpec.describe ComicInfo::Issue do
 
   describe 'edge cases' do
     context 'with empty fields' do
-      let(:empty_comic) do
-        file_path = File.join(__dir__, 'fixtures', 'edge_cases', 'empty_fields.xml')
-        described_class.load(file_path)
-      end
+      let(:empty_comic) { load_fixture('edge_cases/empty_fields.xml') }
 
       it 'handles empty string fields' do
         expect(empty_comic.title).to eq('')
@@ -381,10 +349,7 @@ RSpec.describe ComicInfo::Issue do
     end
 
     context 'with Unicode and special characters' do
-      let(:unicode_comic) do
-        file_path = File.join(__dir__, 'fixtures', 'edge_cases', 'unicode_special_chars.xml')
-        described_class.load(file_path)
-      end
+      let(:unicode_comic) { load_fixture('edge_cases/unicode_special_chars.xml') }
 
       it 'preserves Unicode characters in title' do
         expect(unicode_comic.title).to include('漫画')
@@ -423,15 +388,9 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'convenience methods' do
-    let(:complete_comic) do
-      file_path = File.join(__dir__, 'fixtures', 'valid_complete.xml')
-      described_class.load(file_path)
-    end
+    let(:complete_comic) { load_fixture('valid_complete.xml') }
 
-    let(:manga_comic) do
-      file_path = File.join(__dir__, 'fixtures', 'edge_cases', 'manga_rtl.xml')
-      described_class.load(file_path)
-    end
+    let(:manga_comic) { load_fixture('edge_cases/manga_rtl.xml') }
 
     describe '#manga?' do
       it 'returns true for manga comics' do
@@ -445,21 +404,25 @@ RSpec.describe ComicInfo::Issue do
 
     describe '#right_to_left?' do
       it 'returns true for right-to-left manga' do
+        manga_comic = load_fixture('edge_cases/manga_rtl.xml')
         expect(manga_comic.right_to_left?).to be true
       end
 
       it 'returns false for left-to-right comics' do
-        expect(complete_comic.right_to_left?).to be false
+        regular_comic = load_fixture('valid_complete.xml')
+        expect(regular_comic.right_to_left?).to be false
       end
     end
 
     describe '#black_and_white?' do
       it 'returns true for black and white comics' do
-        expect(manga_comic.black_and_white?).to be true
+        bw_comic = load_fixture('edge_cases/manga_rtl.xml')
+        expect(bw_comic.black_and_white?).to be true
       end
 
       it 'returns false for color comics' do
-        expect(complete_comic.black_and_white?).to be false
+        color_comic = load_fixture('valid_complete.xml')
+        expect(color_comic.black_and_white?).to be false
       end
     end
 
@@ -469,7 +432,7 @@ RSpec.describe ComicInfo::Issue do
       end
 
       it 'returns false when no pages are present' do
-        minimal_comic = described_class.load(File.join(__dir__, 'fixtures', 'valid_minimal.xml'))
+        minimal_comic = load_fixture('valid_minimal.xml')
         expect(minimal_comic.pages?).to be false
       end
     end
