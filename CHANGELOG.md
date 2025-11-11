@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0] - 2025-11-10
 
+### Added
+- **XML Generation**: Complete ComicInfo XML writing functionality
+  - `ComicInfo::Issue#to_xml` method for generating XML strings
+  - `ComicInfo::Issue#save(file_path_or_io)` method for writing to files or IO objects
+  - Valid ComicInfo v2.0 compliant XML output with UTF-8 encoding and schema namespaces
+  - Only includes non-default/non-empty values for clean XML output
+  - Proper XML entity escaping for special characters
+  - Full Pages section generation with all page attributes
+  - Round-trip consistency (load -> save -> load maintains data integrity)
+
 ### Changed - BREAKING
 - **Multi-value field method naming**: Changed from singular/plural pattern to plural/raw_data pattern
   - Plural methods (e.g., `genres`, `characters`) now return arrays

@@ -17,7 +17,8 @@ following the official ComicInfo schema specifications from the
 - 📖 **Manga Support**: Right-to-left reading direction and manga-specific fields
 - ✅ **Comprehensive Validation**: Schema-compliant enum validation and type coercion
 - 🚨 **Detailed Error Handling**: Custom exception classes with helpful error messages
-- 📊 **Export Support**: JSON and YAML serialization with hash representation (in progress)
+- 📊 **Export Support**: JSON, YAML, and XML serialization with hash representation
+- ✍️ **XML Generation**: Complete ComicInfo.xml writing with round-trip consistency
 
 ## Installation
 
@@ -208,9 +209,10 @@ This gem fully supports the ComicInfo v2.0 XSD schema with all field types:
 ### Export Formats
 - **JSON**: Complete serialization with all fields
 - **YAML**: Human-readable format with array structures
+- **XML**: Valid ComicInfo v2.0 compliant XML generation
 - **Hash**: Ruby hash representation with symbol keys
 
-### Data Export
+### Data Export & XML Generation
 
 ```ruby
 comic = ComicInfo.load 'path/to/ComicInfo.xml'
@@ -222,6 +224,18 @@ puts JSON.pretty_generate(JSON.parse(json_string))
 # Export as YAML
 yaml_string = comic.to_yaml
 puts yaml_string
+
+# Generate XML
+xml_string = comic.to_xml
+puts xml_string
+
+# Save to file
+comic.save 'path/to/new/ComicInfo.xml'
+
+# Save to IO object
+File.open('path/to/new/ComicInfo.xml', 'w') do |file|
+  comic.save file
+end
 
 # Export as Hash
 hash = comic.to_h
@@ -274,18 +288,18 @@ bundle exec rubocop --autocorrect
 
 ### Current Features ✅
 - **Core Reading**: Complete ComicInfo.xml parsing
+- **XML Writing**: Full ComicInfo.xml generation with round-trip consistency
 - **Schema Compliance**: Full ComicInfo v2.0 support
 - **Field Types**: String, Integer, Decimal, Enum, Boolean, Arrays
 - **Multi-value Fields**: Both string and array access methods
 - **Issue &Page Support**: Complete Issue and nested Page objects
 - **Error Handling**: Custom exceptions with detailed messages
-- **Data Export**: JSON and YAML serialization
+- **Data Export**: JSON, YAML, and XML serialization
 - **Validation**: Enum values, ranges, type coercion
 - **Unicode Support**: International characters and special symbols
-- **Test Coverage**: 156 comprehensive test cases
+- **Test Coverage**: 178 comprehensive test cases
 
 ### Planned Features 🚧
-- **XML Generation**: Writing ComicInfo.xml files
 - **CLI Tool**: Command-line interface for file manipulation
 - **Schema Migration**: Support for multiple ComicInfo versions
 
