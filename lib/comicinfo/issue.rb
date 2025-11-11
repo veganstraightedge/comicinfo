@@ -2,6 +2,7 @@ require 'nokogiri'
 require 'date'
 require 'json'
 require 'yaml'
+require 'fileutils'
 require_relative 'enums'
 require_relative 'errors'
 require_relative 'page'
@@ -230,6 +231,7 @@ module ComicInfo
       case file_path_or_io
       when String
         begin
+          FileUtils.mkdir_p(File.dirname(file_path_or_io))
           File.write(file_path_or_io, xml_content)
         rescue StandardError => e
           raise Errors::FileError, "Failed to write file '#{file_path_or_io}': #{e.message}"
