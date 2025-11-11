@@ -163,7 +163,7 @@ module ComicInfo
 
     # Convert to XML representation
     def to_xml
-      Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
+      doc = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
         xml.ComicInfo('xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                       'xmlns:xsd' => 'http://www.w3.org/2001/XMLSchema') do
           # String fields in schema order
@@ -218,7 +218,9 @@ module ComicInfo
             end
           end
         end
-      end.to_xml
+      end
+
+      doc.to_xml
     end
 
     # Save to file or IO object
