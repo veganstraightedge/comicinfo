@@ -140,7 +140,7 @@ RSpec.describe ComicInfo::Issue do
     end
 
     it 'returns genre' do
-      expect(complete_comic.genre).to eq 'Superhero, Action, Adventure'
+      expect(complete_comic.genre).to eq %w[Superhero Action Adventure]
     end
 
     it 'returns web' do
@@ -259,33 +259,47 @@ RSpec.describe ComicInfo::Issue do
   describe 'multi-value fields' do
     let(:complete_comic) { load_fixture 'valid_complete.xml' }
 
-    describe 'singular methods (return strings)' do
-      it 'returns character as comma-separated string' do
-        expect(complete_comic.character).to eq 'Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May'
+    describe 'raw_data methods (return strings)' do
+      it 'returns characters_raw_data as comma-separated string' do
+        expect(complete_comic.characters_raw_data).to eq 'Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May'
       end
 
-      it 'returns team as comma-separated string' do
-        expect(complete_comic.team).to eq 'Avengers'
+      it 'returns teams_raw_data as comma-separated string' do
+        expect(complete_comic.teams_raw_data).to eq 'Avengers'
       end
 
-      it 'returns location as comma-separated string' do
-        expect(complete_comic.location).to eq 'New York City, Manhattan, Queens'
+      it 'returns locations_raw_data as comma-separated string' do
+        expect(complete_comic.locations_raw_data).to eq 'New York City, Manhattan, Queens'
       end
 
-      it 'returns story_arc as comma-separated string' do
-        expect(complete_comic.story_arc).to eq 'Brand New Day, Spider-Island'
+      it 'returns story_arcs_raw_data as comma-separated string' do
+        expect(complete_comic.story_arcs_raw_data).to eq 'Brand New Day, Spider-Island'
       end
 
-      it 'returns story_arc_number as comma-separated string' do
-        expect(complete_comic.story_arc_number).to eq '1, 5'
+      it 'returns story_arc_numbers_raw_data as comma-separated string' do
+        expect(complete_comic.story_arc_numbers_raw_data).to eq '1, 5'
       end
 
-      it 'returns genre as comma-separated string' do
-        expect(complete_comic.genre).to eq 'Superhero, Action, Adventure'
+      it 'returns genres_raw_data as comma-separated string' do
+        expect(complete_comic.genres_raw_data).to eq 'Superhero, Action, Adventure'
       end
 
       it 'returns web as space-separated string' do
         expect(complete_comic.web).to eq 'https://marvel.com/comics/issue/12345 https://comicvine.gamespot.com/amazing-spider-man-1/4000-67890/'
+      end
+    end
+
+    describe 'singular aliases (return arrays)' do
+      it 'genre aliases to genres' do
+        expect(complete_comic.genre).to eq %w[Superhero Action Adventure]
+      end
+
+      it 'story_arc aliases to story_arcs' do
+        expect(complete_comic.story_arc).to eq ['Brand New Day', 'Spider-Island']
+      end
+
+      it 'story_arc_number aliases to story_arc_numbers' do
+        expect(complete_comic.story_arc_number).to eq %w[1 5]
       end
     end
 
@@ -599,49 +613,64 @@ RSpec.describe ComicInfo::Issue do
         expect(parsed['community_rating']).to eq 4.25
 
         # Test both singular and plural forms of multi-value fields
-        expect(parsed['character']).to  eq 'Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May'
-        expect(parsed['characters']).to eq ['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May']
-        expect(parsed['genres']).to     eq %w[Superhero Action Adventure]
+        expect(parsed['genre']).to                      eq 'Superhero, Action, Adventure'
+        expect(parsed['genres_raw_data']).to            eq 'Superhero, Action, Adventure'
+        expect(parsed['genres']).to                     eq %w[Superhero Action Adventure]
+        expect(parsed['characters_raw_data']).to        eq 'Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May'
+        expect(parsed['characters']).to                 eq ['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May']
+        expect(parsed['story_arc']).to                  eq 'Brand New Day, Spider-Island'
+        expect(parsed['story_arcs_raw_data']).to        eq 'Brand New Day, Spider-Island'
+        expect(parsed['story_arcs']).to                 eq ['Brand New Day', 'Spider-Island']
+        expect(parsed['story_arc_number']).to           eq '1, 5'
+        expect(parsed['story_arc_numbers_raw_data']).to eq '1, 5'
+        expect(parsed['story_arc_numbers']).to          eq %w[1 5]
 
         # Test pages array
         expect(parsed['pages']).to be_an Array
         expect(parsed['pages'].first).to have_key 'image'
         expect(parsed['pages'].first).to have_key 'type'
 
-        expect(parsed).to have_key 'title'
-        expect(parsed).to have_key 'series'
-        expect(parsed).to have_key 'number'
-        expect(parsed).to have_key 'count'
-        expect(parsed).to have_key 'volume'
-        expect(parsed).to have_key 'summary'
-        expect(parsed).to have_key 'notes'
-        expect(parsed).to have_key 'year'
-        expect(parsed).to have_key 'month'
-        expect(parsed).to have_key 'day'
-        expect(parsed).to have_key 'writer'
-        expect(parsed).to have_key 'penciller'
-        expect(parsed).to have_key 'inker'
-        expect(parsed).to have_key 'colorist'
-        expect(parsed).to have_key 'letterer'
-        expect(parsed).to have_key 'cover_artist'
-        expect(parsed).to have_key 'editor'
-        expect(parsed).to have_key 'publisher'
-        expect(parsed).to have_key 'imprint'
-        expect(parsed).to have_key 'genre'
-        expect(parsed).to have_key 'web'
-        expect(parsed).to have_key 'page_count'
-        expect(parsed).to have_key 'language_iso'
-        expect(parsed).to have_key 'format'
         expect(parsed).to have_key 'black_and_white'
-        expect(parsed).to have_key 'manga'
         expect(parsed).to have_key 'characters'
-        expect(parsed).to have_key 'teams'
-        expect(parsed).to have_key 'locations'
-        expect(parsed).to have_key 'story_arcs'
-        expect(parsed).to have_key 'story_arc_numbers'
+        expect(parsed).to have_key 'characters_raw_data'
+        expect(parsed).to have_key 'colorist'
+        expect(parsed).to have_key 'count'
+        expect(parsed).to have_key 'cover_artist'
+        expect(parsed).to have_key 'day'
+        expect(parsed).to have_key 'editor'
+        expect(parsed).to have_key 'format'
+        expect(parsed).to have_key 'genre'
         expect(parsed).to have_key 'genres'
-        expect(parsed).to have_key 'web_urls'
+        expect(parsed).to have_key 'genres_raw_data'
+        expect(parsed).to have_key 'imprint'
+        expect(parsed).to have_key 'inker'
+        expect(parsed).to have_key 'language_iso'
+        expect(parsed).to have_key 'letterer'
+        expect(parsed).to have_key 'locations'
+        expect(parsed).to have_key 'locations_raw_data'
+        expect(parsed).to have_key 'manga'
+        expect(parsed).to have_key 'month'
+        expect(parsed).to have_key 'notes'
+        expect(parsed).to have_key 'number'
+        expect(parsed).to have_key 'page_count'
         expect(parsed).to have_key 'pages'
+        expect(parsed).to have_key 'penciller'
+        expect(parsed).to have_key 'publisher'
+        expect(parsed).to have_key 'series'
+        expect(parsed).to have_key 'story_arc'
+        expect(parsed).to have_key 'story_arc_number'
+        expect(parsed).to have_key 'story_arc_numbers'
+        expect(parsed).to have_key 'story_arcs'
+        expect(parsed).to have_key 'story_arcs_raw_data'
+        expect(parsed).to have_key 'summary'
+        expect(parsed).to have_key 'teams'
+        expect(parsed).to have_key 'teams_raw_data'
+        expect(parsed).to have_key 'title'
+        expect(parsed).to have_key 'volume'
+        expect(parsed).to have_key 'web'
+        expect(parsed).to have_key 'web_urls'
+        expect(parsed).to have_key 'writer'
+        expect(parsed).to have_key 'year'
 
         expect(parsed['pages']).to      be_an Array
         expect(parsed['characters']).to be_an Array
@@ -659,17 +688,22 @@ RSpec.describe ComicInfo::Issue do
         expect(hash[:series]).to eq 'The Amazing Spider-Man'
       end
 
-      it 'includes both singular and plural forms' do
+      it 'includes both raw_data and array forms' do
         hash = complete_comic.to_h
 
-        expect(hash).to have_key :character
+        expect(hash).to have_key :characters_raw_data
         expect(hash).to have_key :characters
+        expect(hash).to have_key :genres_raw_data
+        expect(hash).to have_key :genres
 
-        expect(hash[:character]).to  be_a  String
-        expect(hash[:characters]).to be_an Array
+        expect(hash[:characters_raw_data]).to be_a  String
+        expect(hash[:characters]).to          be_an Array
+        expect(hash[:genres_raw_data]).to     be_a  String
+        expect(hash[:genres]).to              be_an Array
 
-        expect(hash[:characters]).to        eq ['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May']
-        expect(hash[:story_arc_numbers]).to eq %w[1 5]
+        expect(hash[:characters]).to          eq ['Spider-Man', 'Peter Parker', 'J. Jonah Jameson', 'Aunt May']
+        expect(hash[:characters_raw_data]).to eq 'Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May'
+        expect(hash[:story_arc_numbers]).to   eq %w[1 5]
       end
     end
 
@@ -688,48 +722,60 @@ RSpec.describe ComicInfo::Issue do
         yaml_string = complete_comic.to_yaml
         parsed = YAML.safe_load yaml_string, permitted_classes: [Symbol]
 
-        expect(parsed).to have_key :title
-        expect(parsed).to have_key :series
-        expect(parsed).to have_key :number
-        expect(parsed).to have_key :count
-        expect(parsed).to have_key :volume
-        expect(parsed).to have_key :summary
-        expect(parsed).to have_key :notes
-        expect(parsed).to have_key :year
-        expect(parsed).to have_key :month
-        expect(parsed).to have_key :day
-        expect(parsed).to have_key :writer
-        expect(parsed).to have_key :penciller
-        expect(parsed).to have_key :inker
-        expect(parsed).to have_key :colorist
-        expect(parsed).to have_key :letterer
-        expect(parsed).to have_key :cover_artist
-        expect(parsed).to have_key :editor
-        expect(parsed).to have_key :publisher
-        expect(parsed).to have_key :imprint
-        expect(parsed).to have_key :genre
-        expect(parsed).to have_key :web
-        expect(parsed).to have_key :page_count
-        expect(parsed).to have_key :language_iso
-        expect(parsed).to have_key :format
         expect(parsed).to have_key :black_and_white
-        expect(parsed).to have_key :manga
         expect(parsed).to have_key :characters
-        expect(parsed).to have_key :teams
-        expect(parsed).to have_key :locations
-        expect(parsed).to have_key :story_arcs
-        expect(parsed).to have_key :story_arc_numbers
+        expect(parsed).to have_key :characters_raw_data
+        expect(parsed).to have_key :colorist
+        expect(parsed).to have_key :count
+        expect(parsed).to have_key :cover_artist
+        expect(parsed).to have_key :day
+        expect(parsed).to have_key :editor
+        expect(parsed).to have_key :format
+        expect(parsed).to have_key :genre
         expect(parsed).to have_key :genres
-        expect(parsed).to have_key :web_urls
+        expect(parsed).to have_key :genres_raw_data
+        expect(parsed).to have_key :imprint
+        expect(parsed).to have_key :inker
+        expect(parsed).to have_key :language_iso
+        expect(parsed).to have_key :letterer
+        expect(parsed).to have_key :locations
+        expect(parsed).to have_key :locations_raw_data
+        expect(parsed).to have_key :manga
+        expect(parsed).to have_key :month
+        expect(parsed).to have_key :notes
+        expect(parsed).to have_key :number
+        expect(parsed).to have_key :page_count
         expect(parsed).to have_key :pages
+        expect(parsed).to have_key :penciller
+        expect(parsed).to have_key :publisher
+        expect(parsed).to have_key :series
+        expect(parsed).to have_key :story_arc
+        expect(parsed).to have_key :story_arc_number
+        expect(parsed).to have_key :story_arc_numbers
+        expect(parsed).to have_key :story_arcs
+        expect(parsed).to have_key :story_arcs_raw_data
+        expect(parsed).to have_key :summary
+        expect(parsed).to have_key :teams
+        expect(parsed).to have_key :teams_raw_data
+        expect(parsed).to have_key :title
+        expect(parsed).to have_key :volume
+        expect(parsed).to have_key :web
+        expect(parsed).to have_key :web_urls
+        expect(parsed).to have_key :writer
+        expect(parsed).to have_key :year
 
         expect(parsed[:pages]).to      be_an Array
         expect(parsed[:characters]).to be_an Array
         expect(parsed[:genres]).to     be_an Array
+
+        expect(parsed[:pages]).to be_an Array
+        expect(parsed[:pages].first).to have_key :image
+        expect(parsed[:pages].first).to have_key :type
       end
 
       it 'produces human-readable YAML format' do
         yaml_string = complete_comic.to_yaml
+
         expect(yaml_string).to include 'title: The Amazing Spider-Man'
         expect(yaml_string).to include 'series: The Amazing Spider-Man'
         expect(yaml_string).to include 'count: 600'

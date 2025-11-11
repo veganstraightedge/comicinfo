@@ -108,6 +108,16 @@ teams      = comic.teams      #=> ["Avengers"]
 locations  = comic.locations  #=> ["New York City", "Manhattan", ...]
 genres     = comic.genres     #=> ["Superhero", "Action", "Adventure"]
 web_urls   = comic.web_urls   #=> ["https://marvel.com/...", "https://comicvine.com/..."]
+
+# Raw data methods for original comma-separated strings
+genres_raw     = comic.genres_raw_data     #=> "Superhero, Action, Adventure"
+characters_raw = comic.characters_raw_data #=> "Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May"
+story_arcs_raw = comic.story_arcs_raw_data #=> "Brand New Day, Spider-Island"
+
+# Singular schema elements alias to plural arrays
+genre          = comic.genre          #=> ["Superhero", "Action", "Adventure"] (same as genres)
+story_arc      = comic.story_arc      #=> ["Brand New Day", "Spider-Island"] (same as story_arcs)
+story_arc_num  = comic.story_arc_number #=> ["1", "5"] (same as story_arc_numbers)
 ```
 
 ### Working with Pages
@@ -131,7 +141,7 @@ puts page.deleted? #=> true for Deleted pages
 
 ```ruby
 # Load a manga ComicInfo file
-manga = ComicInfo.load 'path/to/manga/ComicInfo.xml')
+manga = ComicInfo.load 'path/to/manga/ComicInfo.xml'
 
 puts manga.title            #=> "進撃の巨人"
 puts manga.series           #=> "Attack on Titan"
@@ -167,9 +177,17 @@ This gem fully supports the ComicInfo v2.0 XSD schema with all field types:
 ### String Fields
 - Title, Series, Number, Summary, Notes
 - Creator fields (Writer, Penciller, Inker, Colorist, Letterer, CoverArtist, Editor, Translator)
-- Publication fields (Publisher, Imprint, Genre, Web, LanguageISO, Format)
-- Character/Location fields (Characters, Teams, Locations, MainCharacterOrTeam)
-- Story fields (StoryArc, StoryArcNumber, SeriesGroup, ScanInformation, Review)
+- Publication fields (Publisher, Imprint, Web, LanguageISO, Format)
+- Character/Location fields (MainCharacterOrTeam)
+- Story fields (SeriesGroup, ScanInformation, Review)
+
+### Multi-value Fields (String + Array Access)
+- Genre/Genres: Raw comma-separated string + parsed array
+- Characters: Raw comma-separated string + parsed array
+- Teams: Raw comma-separated string + parsed array
+- Locations: Raw comma-separated string + parsed array
+- StoryArc/StoryArcs: Raw comma-separated string + parsed array
+- StoryArcNumber/StoryArcNumbers: Raw comma-separated string + parsed array
 
 ### Integer Fields
 - Count, Volume, AlternateCount, PageCount
@@ -207,9 +225,13 @@ puts yaml_string
 
 # Export as Hash
 hash = comic.to_h
-puts hash[:title]        #=> "The Amazing Spider-Man"
-puts hash[:characters]   #=> ["Spider-Man", "Peter Parker", ...]
-puts hash[:pages].length #=> 12
+puts hash[:title]                   #=> "The Amazing Spider-Man"
+puts hash[:genre]                   #=> "Superhero, Action, Adventure" (raw data)
+puts hash[:genres]                  #=> ["Superhero", "Action", "Adventure"] (parsed array)
+puts hash[:genres_raw_data]         #=> "Superhero, Action, Adventure" (same as :genre)
+puts hash[:characters]              #=> ["Spider-Man", "Peter Parker", ...]
+puts hash[:characters_raw_data]     #=> "Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May"
+puts hash[:pages].length            #=> 12
 ```
 
 ## Development

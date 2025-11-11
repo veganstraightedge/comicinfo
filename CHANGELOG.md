@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-11-10
+
+### Changed - BREAKING
+- **Multi-value field method naming**: Changed from singular/plural pattern to plural/raw_data pattern
+  - Plural methods (e.g., `genres`, `characters`) now return arrays
+  - Raw data methods (e.g., `genres_raw_data`, `characters_raw_data`) return original comma-separated strings
+  - Singular schema elements now alias to plural methods (e.g., `genre` aliases to `genres`)
+  - Export hashes include both raw data keys and _raw_data keys with duplicate values for backward compatibility
+  - This affects: `genre`/`genres`, `character`/`characters`, `team`/`teams`, `location`/`locations`, `story_arc`/`story_arcs`, `story_arc_number`/`story_arc_numbers`
+
+### Migration Guide
+- Replace `.genre` calls with `.genres` (now returns array) or `.genres_raw_data` (for string)
+- Replace `.character` calls with `.characters_raw_data` (for string) - `.characters` was already array
+- Replace `.team` calls with `.teams_raw_data` (for string) - `.teams` was already array
+- Replace `.location` calls with `.locations_raw_data` (for string) - `.locations` was already array
+- Replace `.story_arc` calls with `.story_arcs` (now returns array) or `.story_arcs_raw_data` (for string)
+- Replace `.story_arc_number` calls with `.story_arc_numbers` (now returns array) or `.story_arc_numbers_raw_data` (for string)
+
+### Export Hash Changes
+- Hash exports now include both `:genre` and `:genres_raw_data` keys with identical raw string values
+- Hash exports now include both `:story_arc` and `:story_arcs_raw_data` keys with identical raw string values
+- Hash exports now include both `:story_arc_number` and `:story_arc_numbers_raw_data` keys with identical raw string values
+- This maintains backward compatibility while supporting the new API design
+
 ## [1.0.0] - 2025-10-05
 
 ### Added

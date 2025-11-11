@@ -11,12 +11,10 @@ module ComicInfo
   # Follows the ComicInfo XSD schema v2.0 specification
   class Issue
     # String fields from ComicInfo schema
-    attr_reader :title, :series, :number, :alternate_series, :alternate_number,
-                :summary, :notes, :writer, :penciller, :inker, :colorist,
-                :letterer, :cover_artist, :editor, :translator, :publisher,
-                :imprint, :genre, :web, :language_iso, :format, :character,
-                :team, :location, :scan_information, :story_arc, :story_arc_number,
-                :series_group, :main_character_or_team, :review
+    attr_reader :alternate_number, :alternate_series, :colorist, :cover_artist, :editor,
+                :format, :imprint, :inker, :language_iso, :letterer, :main_character_or_team,
+                :notes, :number, :penciller, :publisher, :review, :scan_information, :series,
+                :series_group, :summary, :title, :translator, :web, :writer
 
     # Integer fields from ComicInfo schema
     attr_reader :count, :volume, :alternate_count, :year, :month, :day, :page_count
@@ -137,35 +135,31 @@ module ComicInfo
     end
 
     # Plural methods that return arrays
-    def genres
-      split_comma_separated(@genre)
-    end
-
-    def characters
-      split_comma_separated(@character)
-    end
-
-    def teams
-      split_comma_separated(@team)
-    end
-
-    def locations
-      split_comma_separated(@location)
-    end
-
-    def story_arcs
-      split_comma_separated(@story_arc)
-    end
-
-    def story_arc_numbers
-      split_comma_separated(@story_arc_number)
-    end
+    def genres            = split_comma_separated @genre
+    def characters        = split_comma_separated @character
+    def teams             = split_comma_separated @team
+    def locations         = split_comma_separated @location
+    def story_arcs        = split_comma_separated @story_arc
+    def story_arc_numbers = split_comma_separated @story_arc_number
 
     def web_urls
       return [] if @web.empty?
 
       @web.split(/\s+/)
     end
+
+    # Raw data methods that return the original string values
+    def genres_raw_data            = @genre
+    def characters_raw_data        = @character
+    def teams_raw_data             = @team
+    def locations_raw_data         = @location
+    def story_arcs_raw_data        = @story_arc
+    def story_arc_numbers_raw_data = @story_arc_number
+
+    # Singular aliases for schema elements that are singular
+    alias genre genres
+    alias story_arc story_arcs
+    alias story_arc_number story_arc_numbers
 
     # Convert to JSON representation
     def to_json(*)
@@ -180,55 +174,58 @@ module ComicInfo
     # Convert to hash representation for JSON serialization
     def to_h
       {
-        title:                  @title,
-        series:                 @series,
-        number:                 @number,
-        count:                  @count,
-        volume:                 @volume,
-        alternate_series:       @alternate_series,
-        alternate_number:       @alternate_number,
-        alternate_count:        @alternate_count,
-        summary:                @summary,
-        notes:                  @notes,
-        year:                   @year,
-        month:                  @month,
-        day:                    @day,
-        writer:                 @writer,
-        penciller:              @penciller,
-        inker:                  @inker,
-        colorist:               @colorist,
-        letterer:               @letterer,
-        cover_artist:           @cover_artist,
-        editor:                 @editor,
-        translator:             @translator,
-        publisher:              @publisher,
-        imprint:                @imprint,
-        genre:                  @genre,
-        genres:                 genres,
-        web:                    @web,
-        web_urls:               web_urls,
-        page_count:             @page_count,
-        language_iso:           @language_iso,
-        format:                 @format,
-        black_and_white:        @black_and_white,
-        manga:                  @manga,
-        character:              @character,
-        characters:             characters,
-        team:                   @team,
-        teams:                  teams,
-        location:               @location,
-        locations:              locations,
-        scan_information:       @scan_information,
-        story_arc:              @story_arc,
-        story_arcs:             story_arcs,
-        story_arc_number:       @story_arc_number,
-        story_arc_numbers:      story_arc_numbers,
-        series_group:           @series_group,
-        age_rating:             @age_rating,
-        main_character_or_team: @main_character_or_team,
-        community_rating:       @community_rating,
-        review:                 @review,
-        pages:                  @pages.map(&:to_h)
+        title:                      @title,
+        series:                     @series,
+        number:                     @number,
+        count:                      @count,
+        volume:                     @volume,
+        alternate_series:           @alternate_series,
+        alternate_number:           @alternate_number,
+        alternate_count:            @alternate_count,
+        summary:                    @summary,
+        notes:                      @notes,
+        year:                       @year,
+        month:                      @month,
+        day:                        @day,
+        writer:                     @writer,
+        penciller:                  @penciller,
+        inker:                      @inker,
+        colorist:                   @colorist,
+        letterer:                   @letterer,
+        cover_artist:               @cover_artist,
+        editor:                     @editor,
+        translator:                 @translator,
+        publisher:                  @publisher,
+        imprint:                    @imprint,
+        genre:                      @genre,
+        genres_raw_data:            genres_raw_data,
+        genres:                     genres,
+        web:                        @web,
+        web_urls:                   web_urls,
+        page_count:                 @page_count,
+        language_iso:               @language_iso,
+        format:                     @format,
+        black_and_white:            @black_and_white,
+        manga:                      @manga,
+        characters_raw_data:        characters_raw_data,
+        characters:                 characters,
+        teams_raw_data:             teams_raw_data,
+        teams:                      teams,
+        locations_raw_data:         locations_raw_data,
+        locations:                  locations,
+        scan_information:           @scan_information,
+        story_arc:                  @story_arc,
+        story_arcs_raw_data:        story_arcs_raw_data,
+        story_arcs:                 story_arcs,
+        story_arc_number:           @story_arc_number,
+        story_arc_numbers_raw_data: story_arc_numbers_raw_data,
+        story_arc_numbers:          story_arc_numbers,
+        series_group:               @series_group,
+        age_rating:                 @age_rating,
+        main_character_or_team:     @main_character_or_team,
+        community_rating:           @community_rating,
+        review:                     @review,
+        pages:                      @pages.map(&:to_h)
       }.compact
     end
 
