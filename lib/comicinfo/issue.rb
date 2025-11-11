@@ -161,6 +161,88 @@ module ComicInfo
     alias story_arc story_arcs
     alias story_arc_number story_arc_numbers
 
+    # Convert to XML representation
+    def to_xml
+      Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
+        xml.ComicInfo('xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+                      'xmlns:xsd' => 'http://www.w3.org/2001/XMLSchema') do
+          # String fields in schema order
+          xml.Title(@title) unless @title == Enums::DEFAULT_STRING
+          xml.Series(@series) unless @series == Enums::DEFAULT_STRING
+          xml.Number(@number) unless @number == Enums::DEFAULT_STRING
+          xml.Count(@count) unless @count == Enums::DEFAULT_INTEGER
+          xml.Volume(@volume) unless @volume == Enums::DEFAULT_INTEGER
+          xml.AlternateSeries(@alternate_series) unless @alternate_series == Enums::DEFAULT_STRING
+          xml.AlternateNumber(@alternate_number) unless @alternate_number == Enums::DEFAULT_STRING
+          xml.AlternateCount(@alternate_count) unless @alternate_count == Enums::DEFAULT_INTEGER
+          xml.Summary(@summary) unless @summary == Enums::DEFAULT_STRING
+          xml.Notes(@notes) unless @notes == Enums::DEFAULT_STRING
+          xml.Year(@year) unless @year == Enums::DEFAULT_INTEGER
+          xml.Month(@month) unless @month == Enums::DEFAULT_INTEGER
+          xml.Day(@day) unless @day == Enums::DEFAULT_INTEGER
+          xml.Writer(@writer) unless @writer == Enums::DEFAULT_STRING
+          xml.Penciller(@penciller) unless @penciller == Enums::DEFAULT_STRING
+          xml.Inker(@inker) unless @inker == Enums::DEFAULT_STRING
+          xml.Colorist(@colorist) unless @colorist == Enums::DEFAULT_STRING
+          xml.Letterer(@letterer) unless @letterer == Enums::DEFAULT_STRING
+          xml.CoverArtist(@cover_artist) unless @cover_artist == Enums::DEFAULT_STRING
+          xml.Editor(@editor) unless @editor == Enums::DEFAULT_STRING
+          xml.Translator(@translator) unless @translator == Enums::DEFAULT_STRING
+          xml.Publisher(@publisher) unless @publisher == Enums::DEFAULT_STRING
+          xml.Imprint(@imprint) unless @imprint == Enums::DEFAULT_STRING
+          xml.Genre(@genre) unless @genre == Enums::DEFAULT_STRING
+          xml.Web(@web) unless @web == Enums::DEFAULT_STRING
+          xml.PageCount(@page_count) unless @page_count == Enums::DEFAULT_PAGE_COUNT
+          xml.LanguageISO(@language_iso) unless @language_iso == Enums::DEFAULT_STRING
+          xml.Format(@format) unless @format == Enums::DEFAULT_STRING
+          xml.BlackAndWhite(@black_and_white) unless @black_and_white == Enums::DEFAULT_ENUM_UNKNOWN
+          xml.Manga(@manga) unless @manga == Enums::DEFAULT_ENUM_UNKNOWN
+          xml.Characters(@character) unless @character == Enums::DEFAULT_STRING
+          xml.Teams(@team) unless @team == Enums::DEFAULT_STRING
+          xml.Locations(@location) unless @location == Enums::DEFAULT_STRING
+          xml.ScanInformation(@scan_information) unless @scan_information == Enums::DEFAULT_STRING
+          xml.StoryArc(@story_arc) unless @story_arc == Enums::DEFAULT_STRING
+          xml.StoryArcNumber(@story_arc_number) unless @story_arc_number == Enums::DEFAULT_STRING
+          xml.SeriesGroup(@series_group) unless @series_group == Enums::DEFAULT_STRING
+          xml.AgeRating(@age_rating) unless @age_rating == Enums::DEFAULT_ENUM_UNKNOWN
+          xml.MainCharacterOrTeam(@main_character_or_team) unless @main_character_or_team == Enums::DEFAULT_STRING
+          xml.CommunityRating(@community_rating) unless @community_rating.nil?
+          xml.Review(@review) unless @review == Enums::DEFAULT_STRING
+
+          # Pages section
+          if @pages && !@pages.empty?
+            xml.Pages do
+              @pages.each do |page|
+                xml.Page(page.to_xml_attributes)
+              end
+            end
+          end
+        end
+      end.to_xml
+    end
+
+    # Save to file or IO object
+    def save file_path_or_io
+      xml_content = to_xml
+
+      case file_path_or_io
+      when String
+        begin
+          File.write(file_path_or_io, xml_content)
+        rescue StandardError => e
+          raise Errors::FileError, "Failed to write file '#{file_path_or_io}': #{e.message}"
+        end
+      when IO
+        begin
+          file_path_or_io.write(xml_content)
+        rescue StandardError => e
+          raise Errors::FileError, "Failed to write to IO object: #{e.message}"
+        end
+      else
+        raise Errors::FileError, 'Invalid file path or IO object'
+      end
+    end
+
     # Convert to JSON representation
     def to_json(*)
       to_h.to_json(*)

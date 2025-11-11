@@ -48,6 +48,7 @@ module ComicInfo
     DEFAULT_PAGE_TYPE = 'Story'.freeze
     DEFAULT_DOUBLE_PAGE = false
     DEFAULT_IMAGE_SIZE = 0
+    DEFAULT_COMMUNITY_RATING = -1.0
 
     # Validation methods
     module Validators

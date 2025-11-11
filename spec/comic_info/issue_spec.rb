@@ -787,4 +787,190 @@ RSpec.describe ComicInfo::Issue do
       end
     end
   end
+
+  describe 'XML generation' do
+    let(:complete_comic) { load_fixture 'valid_complete.xml' }
+    let(:minimal_comic) { load_fixture 'valid_minimal.xml' }
+
+    describe '#to_xml' do
+      it 'generates valid XML string' do
+        xml_string = complete_comic.to_xml
+        expect(xml_string).to be_a String
+        expect(xml_string).to include '<?xml version="1.0" encoding="UTF-8"?>'
+        expect(xml_string).to include '<ComicInfo'
+        expect(xml_string).to include '</ComicInfo>'
+      end
+
+      it 'includes XML declaration with UTF-8 encoding' do
+        xml_string = complete_comic.to_xml
+        expect(xml_string).to start_with '<?xml version="1.0" encoding="UTF-8"?>'
+      end
+
+      it 'includes schema namespaces' do
+        xml_string = complete_comic.to_xml
+        expect(xml_string).to include 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+        expect(xml_string).to include 'xmlns:xsd="http://www.w3.org/2001/XMLSchema"'
+      end
+
+      it 'includes all non-default fields' do
+        xml_string = complete_comic.to_xml
+        expect(xml_string).to include '<Title>The Amazing Spider-Man</Title>'
+        expect(xml_string).to include '<Series>The Amazing Spider-Man</Series>'
+        expect(xml_string).to include '<Number>1</Number>'
+        expect(xml_string).to include '<Writer>Dan Slott, Christos Gage</Writer>'
+        expect(xml_string).to include '<Publisher>Marvel Comics</Publisher>'
+      end
+
+      it 'excludes default/empty values' do
+        xml_string = minimal_comic.to_xml
+        expect(xml_string).not_to include '<Writer></Writer>'
+        expect(xml_string).not_to include '<Count>-1</Count>'
+        expect(xml_string).not_to include '<BlackAndWhite>Unknown</BlackAndWhite>'
+        expect(xml_string).not_to include '<Manga>Unknown</Manga>'
+      end
+
+      it 'includes Pages section when pages exist' do
+        xml_string = complete_comic.to_xml
+        expect(xml_string).to include '<Pages>'
+        expect(xml_string).to include '</Pages>'
+        expect(xml_string).to include '<Page Image="0"'
+      end
+
+      it 'excludes Pages section when no pages exist' do
+        xml_string = minimal_comic.to_xml
+        expect(xml_string).not_to include '<Pages>'
+      end
+
+      it 'handles Unicode characters correctly' do
+        unicode_comic = load_fixture 'edge_cases/unicode_special_chars.xml'
+        xml_string = unicode_comic.to_xml
+        # XML escapes ampersands but not quotes in this case
+        expect(xml_string).to include '<Title>漫画 &amp; Bande Dessinée: "Special" Characters</Title>'
+      end
+
+      it 'properly escapes XML entities' do
+        entities_comic = load_fixture 'edge_cases/unicode_special_chars.xml'
+        xml_string = entities_comic.to_xml
+        # XML should be properly escaped by Nokogiri
+        expect(xml_string).to be_a String
+        expect(xml_string).to include '<ComicInfo'
+      end
+
+      it 'maintains multi-value field formatting' do
+        xml_string = complete_comic.to_xml
+        expect(xml_string).to include '<Genre>Superhero, Action, Adventure</Genre>'
+        expect(xml_string).to include '<Characters>Spider-Man, Peter Parker, J. Jonah Jameson, Aunt May</Characters>'
+        expect(xml_string).to include '<StoryArc>Brand New Day, Spider-Island</StoryArc>'
+      end
+
+      it 'includes enum values' do
+        xml_string = complete_comic.to_xml
+        expect(xml_string).to include '<AgeRating>Teen</AgeRating>'
+        expect(xml_string).to include '<BlackAndWhite>No</BlackAndWhite>'
+        expect(xml_string).to include '<Manga>No</Manga>'
+      end
+
+      it 'includes decimal values' do
+        xml_string = complete_comic.to_xml
+        expect(xml_string).to include '<CommunityRating>4.25</CommunityRating>'
+      end
+    end
+
+    describe '#save' do
+      let(:output_file) { 'spec/fixtures/output/test_output.xml' }
+
+      after do
+        FileUtils.rm_f(output_file)
+      end
+
+      it 'saves to file path' do
+        complete_comic.save(output_file)
+        expect(File.exist?(output_file)).to be true
+
+        content = File.read(output_file)
+        expect(content).to include '<ComicInfo'
+        expect(content).to include '<Title>The Amazing Spider-Man</Title>'
+      end
+
+      it 'saves to IO object' do
+        File.open(output_file, 'w') do |f|
+          complete_comic.save(f)
+        end
+
+        expect(File.exist?(output_file)).to be true
+        content = File.read(output_file)
+        expect(content).to include '<ComicInfo'
+      end
+
+      it 'raises FileError for invalid path' do
+        expect do
+          complete_comic.save('/invalid/path/file.xml')
+        end.to raise_error(ComicInfo::Errors::FileError, /Failed to write file/)
+      end
+
+      it 'raises FileError for invalid IO object' do
+        expect do
+          complete_comic.save(123)
+        end.to raise_error(ComicInfo::Errors::FileError, 'Invalid file path or IO object')
+      end
+    end
+
+    describe 'round-trip consistency' do
+      it 'maintains data integrity through load -> save -> load cycle' do
+        original_comic = complete_comic
+
+        # Save to XML
+        output_file = 'spec/fixtures/output/roundtrip_test.xml'
+        original_comic.save(output_file)
+
+        # Load back from saved XML
+        reloaded_comic = described_class.load(output_file)
+
+        # Compare key fields
+        expect(reloaded_comic.title).to eq original_comic.title
+        expect(reloaded_comic.series).to eq original_comic.series
+        expect(reloaded_comic.number).to eq original_comic.number
+        expect(reloaded_comic.writer).to eq original_comic.writer
+        expect(reloaded_comic.publisher).to eq original_comic.publisher
+        expect(reloaded_comic.genres).to eq original_comic.genres
+        expect(reloaded_comic.characters).to eq original_comic.characters
+        expect(reloaded_comic.age_rating).to eq original_comic.age_rating
+        expect(reloaded_comic.community_rating).to eq original_comic.community_rating
+        expect(reloaded_comic.pages.length).to eq original_comic.pages.length
+
+        FileUtils.rm_f(output_file)
+      end
+
+      it 'preserves page attributes through round-trip' do
+        original_comic = complete_comic
+        next if original_comic.pages.empty?
+
+        output_file = 'spec/fixtures/output/pages_roundtrip_test.xml'
+        original_comic.save(output_file)
+        reloaded_comic = described_class.load(output_file)
+
+        original_comic.pages.each_with_index do |original_page, index|
+          reloaded_page = reloaded_comic.pages[index]
+          expect(reloaded_page.image).to eq original_page.image
+          expect(reloaded_page.type).to eq original_page.type
+          expect(reloaded_page.double_page).to eq original_page.double_page
+        end
+
+        FileUtils.rm_f(output_file)
+      end
+
+      it 'handles minimal comics correctly' do
+        original_comic = minimal_comic
+
+        output_file = 'spec/fixtures/output/minimal_roundtrip_test.xml'
+        original_comic.save(output_file)
+        reloaded_comic = described_class.load(output_file)
+
+        expect(reloaded_comic.title).to eq original_comic.title
+        expect(reloaded_comic.series).to eq original_comic.series
+
+        FileUtils.rm_f(output_file)
+      end
+    end
+  end
 end

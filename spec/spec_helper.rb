@@ -1,4 +1,5 @@
 require 'comicinfo'
+require 'fileutils'
 
 # Helper methods for working with fixture files
 module FixtureHelpers
