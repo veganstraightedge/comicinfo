@@ -7,12 +7,14 @@ RSpec.describe ComicInfo::FilenameCleaner do
   describe '#clean' do
     context 'with fixture test cases' do
       it 'handles all test cases correctly' do
-        test_cases.each do |test_case|
-          cleaner = described_class.new(tags: test_case['tags'])
-          result = cleaner.clean(test_case['input'])
+        aggregate_failures do
+          test_cases.each do |test_case|
+            cleaner = described_class.new(tags: test_case['tags'])
+            result = cleaner.clean(test_case['input'])
 
-          expect(result).to eq(test_case['expected']),
-                            "Failed for '#{test_case['description']}': expected '#{test_case['expected']}' but got '#{result}'"
+            expect(result).to eq(test_case['expected']),
+                              "Failed for '#{test_case['description']}': expected '#{test_case['expected']}' but got '#{result}'"
+          end
         end
       end
     end
