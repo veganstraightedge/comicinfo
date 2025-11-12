@@ -2,75 +2,95 @@ require 'spec_helper'
 
 RSpec.describe ComicInfo::FilenameCleaner do
   describe '#clean' do
-    context 'single tag removal' do
-      it 'removes Digital tag' do
-        cleaner = described_class.new(tags: ['Digital'])
+    let(:subject) { described_class.new(tags: tags).clean(old_filename) }
 
-        expect(cleaner.clean('Batman #1 (2021) (Digital).cbz')).to eq('Batman #1 (2021).cbz')
+    context 'single tag removal' do
+      let(:tags)         { ['Digital'] }
+      let(:old_filename) { 'Batman #1 (2021) (Digital).cbz' }
+      let(:new_filename) { 'Batman #1 (2021).cbz' }
+
+      it 'removes Digital tag' do
+        expect(subject).to eq new_filename
       end
     end
 
     context 'multiple tag removal' do
-      it 'removes Digital, Zone-Empire, and c2c tags' do
-        cleaner = described_class.new(tags: %w[Digital Zone-Empire c2c])
+      let(:tags)         { %w[Digital Zone-Empire c2c] }
+      let(:old_filename) { 'Amazing Spider-Man #1 (2018) (Digital) (Zone-Empire) (c2c).cbr' }
+      let(:new_filename) { 'Amazing Spider-Man #1 (2018).cbr' }
 
-        expect(cleaner.clean('Amazing Spider-Man #1 (2018) (Digital) (Zone-Empire) (c2c).cbr')).to eq('Amazing Spider-Man #1 (2018).cbr')
+      it 'removes Digital, Zone-Empire, and c2c tags' do
+        expect(subject).to eq new_filename
       end
     end
 
     context 'whitespace normalization' do
-      it 'normalizes multiple spaces and removes Digital tag' do
-        cleaner = described_class.new(tags: ['Digital'])
+      let(:tags)         { %w[Digital] }
+      let(:old_filename) { '  Superman    #1   (2021)   (Digital)  .cbz' }
+      let(:new_filename) { 'Superman #1 (2021).cbz' }
 
-        expect(cleaner.clean('  Superman    #1   (2021)   (Digital)  .cbz')).to eq('Superman #1 (2021).cbz')
+      it 'normalizes multiple spaces and removes Digital tag' do
+        expect(subject).to eq new_filename
       end
     end
 
     context 'no tags to remove' do
-      it 'leaves filename unchanged when no matching tags' do
-        cleaner = described_class.new(tags: %w[Digital Scan])
+      let(:tags)         { %w[Digital Scan] }
+      let(:old_filename) { 'X-Men #1 (2019).cbz' }
+      let(:new_filename) { 'X-Men #1 (2019).cbz' }
 
-        expect(cleaner.clean('X-Men #1 (2019).cbz')).to eq('X-Men #1 (2019).cbz')
+      it 'leaves filename unchanged when no matching tags' do
+        expect(subject).to eq new_filename
       end
     end
 
     context 'partial tag match' do
-      it 'does not remove partial matches' do
-        cleaner = described_class.new(tags: ['Digital'])
+      let(:tags)         { %w[Digital] }
+      let(:old_filename) { 'Flash #1 (2020) (Digital HD).cbz' }
+      let(:new_filename) { 'Flash #1 (2020) (Digital HD).cbz' }
 
-        expect(cleaner.clean('Flash #1 (2020) (Digital HD).cbz')).to eq('Flash #1 (2020) (Digital HD).cbz')
+      it 'does not remove partial matches' do
+        expect(subject).to eq new_filename
       end
     end
 
     context 'case sensitive tags' do
-      it 'does not remove different case tags' do
-        cleaner = described_class.new(tags: ['Digital'])
+      let(:tags)         { %w[Digital Scan] }
+      let(:old_filename) { 'Wonder Woman #1 (2021) (digital).cbz' }
+      let(:new_filename) { 'Wonder Woman #1 (2021) (digital).cbz' }
 
-        expect(cleaner.clean('Wonder Woman #1 (2021) (digital).cbz')).to eq('Wonder Woman #1 (2021) (digital).cbz')
+      it 'does not remove different case tags' do
+        expect(subject).to eq new_filename
       end
     end
 
     context 'complex filename with multiple spaces' do
-      it 'normalizes spaces and removes multiple tags' do
-        cleaner = described_class.new(tags: %w[Digital Zone-Empire c2c])
+      let(:tags)         { %w[Digital Zone-Empire c2c] }
+      let(:old_filename) { 'Justice League   #1  (2018)   (Digital)  (Zone-Empire)   (c2c)  .cbr' }
+      let(:new_filename) { 'Justice League #1 (2018).cbr' }
 
-        expect(cleaner.clean('Justice League   #1  (2018)   (Digital)  (Zone-Empire)   (c2c)  .cbr')).to eq('Justice League #1 (2018).cbr')
+      it 'normalizes spaces and removes multiple tags' do
+        expect(subject).to eq new_filename
       end
     end
 
     context 'special characters in tags' do
-      it 'removes tags with hyphens and special characters' do
-        cleaner = described_class.new(tags: %w[Digital-HD Zone-Empire])
+      let(:tags)         { %w[Digital-HD Zone-Empire] }
+      let(:old_filename) { 'Deadpool #1 (2019) (Digital-HD) (Zone-Empire).cbz' }
+      let(:new_filename) { 'Deadpool #1 (2019).cbz' }
 
-        expect(cleaner.clean('Deadpool #1 (2019) (Digital-HD) (Zone-Empire).cbz')).to eq('Deadpool #1 (2019).cbz')
+      it 'removes tags with hyphens and special characters' do
+        expect(subject).to eq new_filename
       end
     end
 
     context 'with empty tags' do
-      it 'only normalizes whitespace' do
-        cleaner = described_class.new(tags: [])
+      let(:tags)         { [] }
+      let(:old_filename) { '  Test   File  .cbz' }
+      let(:new_filename) { 'Test File.cbz' }
 
-        expect(cleaner.clean('  Test   File  .cbz')).to eq('Test File.cbz')
+      it 'only normalizes whitespace' do
+        expect(subject).to eq new_filename
       end
     end
   end
