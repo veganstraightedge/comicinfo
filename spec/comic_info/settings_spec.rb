@@ -118,11 +118,12 @@ RSpec.describe ComicInfo::Settings do
   end
 
   describe '#remove_filename_tag' do
-    subject(:settings) { described_class.load settings_path }
+    subject(:filename_tags) { settings.filename_tags }
+
+    let(:settings) { described_class.load settings_path }
+    let(:settings_path) { custom_settings_path }
 
     before { described_class.create settings_path }
-
-    let(:settings_path) { custom_settings_path }
 
     context 'with an existing tag' do
       before do
@@ -132,7 +133,7 @@ RSpec.describe ComicInfo::Settings do
       end
 
       it 'removes an existing filename tag' do
-        expect(settings.filename_tags).to eq ['[Scan]']
+        expect(filename_tags).to eq ['[Scan]']
       end
     end
 
@@ -143,7 +144,7 @@ RSpec.describe ComicInfo::Settings do
       end
 
       it 'does nothing when tag does not exist' do
-        expect(settings.filename_tags).to eq ['[Scan]']
+        expect(filename_tags).to eq ['[Scan]']
       end
     end
   end
