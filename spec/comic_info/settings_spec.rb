@@ -13,8 +13,8 @@ RSpec.describe ComicInfo::Settings do
   describe '.create' do
     subject(:filename_tags) { settings['filename_tags'] }
 
-    let(:settings) { YAML.load_file settings_path }
     let(:settings_path) { custom_settings_path }
+    let(:settings) { YAML.load_file settings_path }
 
     before { described_class.create settings_path }
 
@@ -56,14 +56,6 @@ RSpec.describe ComicInfo::Settings do
       end
     end
 
-    context 'when loading a nonexistent settings file' do
-      let(:settings_path) { '/nonexistent/path.yaml' }
-
-      it 'returns nil when settings file does not exist' do
-        expect(settings).to be_nil
-      end
-    end
-
     context 'when loading settings from a custom file' do
       let(:settings_path) { custom_settings_path }
 
@@ -73,11 +65,20 @@ RSpec.describe ComicInfo::Settings do
         expect(filename_tags).to be_empty
       end
     end
+
+    context 'when loading a nonexistent settings file' do
+      let(:settings_path) { '/nonexistent/path.yaml' }
+
+      it 'returns nil when settings file does not exist' do
+        expect(settings).to be_nil
+      end
+    end
   end
 
   describe '#filename_tags' do
-    subject(:settings) { described_class.load settings_path }
+    subject(:filename_tags) { settings.filename_tags }
 
+    let(:settings) { described_class.load settings_path }
     let(:settings_path) { settings_fixture_path }
 
     it 'returns the filename tags from fixture settings' do
