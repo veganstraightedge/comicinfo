@@ -6,7 +6,7 @@ RSpec.describe ComicInfo::FilenameCleaner do
     let(:cleaned_filename) { cleaner.clean old_filename }
 
     context 'when removing single tag' do
-      let(:filename_tags) { ['(Digital)'] }
+      let(:filename_tags) { %w[(Digital)] }
       let(:old_filename)  { 'Batman #1 (2021) (Digital).cbz' }
       let(:new_filename)  { 'Batman #1 (2021).cbz' }
 
