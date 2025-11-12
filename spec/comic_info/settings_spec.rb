@@ -56,6 +56,14 @@ RSpec.describe ComicInfo::Settings do
       end
     end
 
+    context 'when loading a nonexistent settings file' do
+      let(:settings_path) { '/nonexistent/path.yaml' }
+
+      it 'returns nil when settings file does not exist' do
+        expect(settings).to be_nil
+      end
+    end
+
     context 'when loading settings from a custom file' do
       let(:settings_path) { custom_settings_path }
 
@@ -63,14 +71,6 @@ RSpec.describe ComicInfo::Settings do
 
       it 'loads settings from custom path' do
         expect(filename_tags).to be_empty
-      end
-    end
-
-    context 'when loading a nonexistent settings file' do
-      let(:settings_path) { '/nonexistent/path.yaml' }
-
-      it 'returns nil when settings file does not exist' do
-        expect(settings).to be_nil
       end
     end
   end
