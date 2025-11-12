@@ -14,6 +14,7 @@ RSpec.describe ComicInfo::Settings do
     subject(:filename_tags) { settings['filename_tags'] }
 
     let(:settings) { YAML.load_file settings_path }
+    let(:settings_path) { custom_settings_path }
 
     context 'with default settings' do
       let(:settings_path) { test_settings_path }
@@ -29,8 +30,6 @@ RSpec.describe ComicInfo::Settings do
     context 'with a custom path' do
       subject(:filename_tags) { settings['filename_tags'] }
 
-      let(:settings_path) { custom_settings_path }
-
       before { described_class.create settings_path }
 
       it 'creates settings file at custom path' do
@@ -41,7 +40,6 @@ RSpec.describe ComicInfo::Settings do
 
     context 'when creating settings file' do
       let(:settings) { described_class.create settings_path }
-      let(:settings_path) { custom_settings_path }
 
       it 'returns the path to the created settings file' do
         expect(settings).to eq custom_settings_path
