@@ -94,6 +94,16 @@ RSpec.describe ComicInfo::FilenameCleaner do
       end
     end
 
+    context 'with nil tags' do
+      let(:filename_tags) { nil }
+      let(:old_filename)  { '  Test         File         .cbz' }
+      let(:new_filename)  { 'Test File.cbz' }
+
+      it 'only normalizes whitespace' do
+        expect(cleaned_filename).to eq new_filename
+      end
+    end
+
     context 'with different delimiter types' do
       let(:filename_tags) { ['[Digital]', '{Scan}', '(Zone-Empire)'] }
       let(:old_filename)  { 'Spider-Man #1 (2021) [Digital] {Scan} (Zone-Empire).cbz' }

@@ -1,7 +1,7 @@
 module ComicInfo
   class FilenameCleaner
     def initialize tags: []
-      @tags = tags
+      @tags = Array(tags)
     end
 
     def clean filename
