@@ -78,11 +78,11 @@ RSpec.describe ComicInfo::Settings do
   describe '#filename_tags' do
     subject(:filename_tags) { settings.filename_tags }
 
-    let(:settings) { described_class.load settings_path }
     let(:settings_path) { settings_fixture_path }
+    let(:settings) { described_class.load settings_path }
 
     it 'returns the filename tags from fixture settings' do
-      expect(settings.filename_tags).to eq ['(Digital)', '[Scan]', '{c2c}', '(Zone-Empire)', '(Digital-HD)']
+      expect(filename_tags).to eq ['(Digital)', '[Scan]', '{c2c}', '(Zone-Empire)', '(Digital-HD)']
     end
   end
 
@@ -96,9 +96,7 @@ RSpec.describe ComicInfo::Settings do
     context 'with an existing tag in settings file' do
       let(:settings_path) { test_settings_path }
 
-      before do
-        settings.add_filename_tag '(Digital)'
-      end
+      before { settings.add_filename_tag '(Digital)' }
 
       it 'adds a new filename tag' do
         expect(filename_tags).to eq ['(Digital)']
