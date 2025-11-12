@@ -152,9 +152,8 @@ RSpec.describe ComicInfo::Settings do
   describe '#save' do
     subject(:filename_tags) { reloaded_settings['filename_tags'] }
 
-    let(:settings) { described_class.load settings_path }
     let(:settings_path) { test_settings_path }
-
+    let(:settings) { described_class.load settings_path }
     let(:reloaded_settings) { YAML.load_file test_settings_path }
 
     before do
