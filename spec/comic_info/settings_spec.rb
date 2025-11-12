@@ -20,10 +20,7 @@ RSpec.describe ComicInfo::Settings do
       before { described_class.create settings_path }
 
       it 'creates settings file with empty filename_tags' do
-        # described_class.create test_settings_path
-
         expect(File.exist?(test_settings_path)).to be true
-        # settings = YAML.load_file test_settings_path
         expect(filename_tags).to eq []
       end
     end
