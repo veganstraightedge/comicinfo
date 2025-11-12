@@ -16,10 +16,10 @@ RSpec.describe ComicInfo::Settings do
     let(:settings) { YAML.load_file settings_path }
     let(:settings_path) { custom_settings_path }
 
+    before { described_class.create settings_path }
+
     context 'with default settings' do
       let(:settings_path) { test_settings_path }
-
-      before { described_class.create settings_path }
 
       it 'creates settings file with empty filename_tags' do
         expect(File).to exist test_settings_path
@@ -28,10 +28,6 @@ RSpec.describe ComicInfo::Settings do
     end
 
     context 'with a custom path' do
-      subject(:filename_tags) { settings['filename_tags'] }
-
-      before { described_class.create settings_path }
-
       it 'creates settings file at custom path' do
         expect(File).to exist custom_settings_path
         expect(filename_tags).to eq []
