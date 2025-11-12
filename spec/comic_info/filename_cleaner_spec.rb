@@ -120,7 +120,7 @@ RSpec.describe ComicInfo::FilenameCleaner do
       let(:new_filename) { 'Batman #1 (2021).cbz' }
       let(:tags_file)    { fixture_path('tags.txt') }
 
-      let(:cleaned_filename) { described_class.new(tags_file: tags_file).clean(old_filename) }
+      let(:cleaner) { described_class.new tags_file: tags_file }
 
       it 'removes tags loaded from file' do
         expect(cleaned_filename).to eq new_filename
