@@ -57,6 +57,9 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   Enabled: false
 
+RSpec/NestedGroups:
+  Enabled: false
+
 RSpec/RepeatedExample:
   Exclude:
     - spec/comic_info/issue_spec.rb

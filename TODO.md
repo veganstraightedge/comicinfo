@@ -6,7 +6,7 @@
 - [x] remove FilenameTags
 - [ ] from a user-defined list of FilenameTags 
   - [x] from a file, one FilenameTag per line 
-  - [ ] an ENV var
+  - [x] an ENV var
   - [ ] args passed into CLI
   - [x] args passed into a method
 - [ ] the ability to create a longbox settings yaml file (default: ~/.longbox/settings.yaml)
