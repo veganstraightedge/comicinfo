@@ -15,12 +15,12 @@ module ComicInfo
 
     def self.create path = nil
       settings_path = path || DEFAULT_SETTINGS_PATH
-      settings_dir = File.dirname(settings_path)
+      settings_dir = File.dirname settings_path
 
-      FileUtils.mkdir_p(settings_dir)
+      FileUtils.mkdir_p settings_dir
 
       default_data = { 'filename_tags' => [] }
-      File.write(settings_path, YAML.dump(default_data))
+      File.write settings_path, YAML.dump(default_data)
 
       settings_path
     end
@@ -29,8 +29,8 @@ module ComicInfo
       settings_path = path || DEFAULT_SETTINGS_PATH
       return nil unless File.exist?(settings_path)
 
-      data = YAML.load_file(settings_path)
-      new(data, settings_path)
+      data = YAML.load_file settings_path
+      new data, settings_path
     end
 
     def add_filename_tag tag
@@ -43,7 +43,7 @@ module ComicInfo
 
     def save
       @data['filename_tags'] = @filename_tags
-      File.write(@settings_path, YAML.dump(@data))
+      File.write @settings_path, YAML.dump(@data)
     end
   end
 end
