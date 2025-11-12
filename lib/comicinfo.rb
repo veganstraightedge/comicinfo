@@ -8,6 +8,7 @@ module ComicInfo
   autoload :Enums, 'comicinfo/enums'
   autoload :Errors, 'comicinfo/errors'
   autoload :FilenameCleaner, 'comicinfo/filename_cleaner'
+  autoload :Settings, 'comicinfo/settings'
 
   # Convenience method for loading ComicInfo files
   def self.load file_path_or_xml_string

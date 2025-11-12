@@ -9,7 +9,7 @@
   - [x] an ENV var
   - [ ] args passed into CLI
   - [x] args passed into a method
-- [ ] the ability to create a longbox settings yaml file (default: ~/.longbox/settings.yaml)
+- [x] the ability to create a longbox settings yaml file (default: ~/.longbox/settings.yaml)
   - [ ] the ability to add/remove FilenameTags to/from that settings yaml file
 
 ## Notes
