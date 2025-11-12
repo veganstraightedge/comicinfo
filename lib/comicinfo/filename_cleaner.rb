@@ -28,7 +28,8 @@ module ComicInfo
     private
 
     def load_tags_from_file file_path
-      File.readlines(file_path, chomp: true).reject(&:empty?)
+      tag_lines = File.readlines file_path, chomp: true
+      tag_lines.reject &:empty?
     end
   end
 end
