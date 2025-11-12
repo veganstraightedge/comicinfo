@@ -118,7 +118,7 @@ RSpec.describe ComicInfo::FilenameCleaner do
     context 'when loading tags from file' do
       let(:old_filename) { '  Batman #1 (2021)    (Digital) [Scan] {c2c}.cbz' }
       let(:new_filename) { 'Batman #1 (2021).cbz' }
-      let(:tags_file)    { fixture_path('tags.txt') }
+      let(:tags_file)    { fixture_path 'tags.txt' }
 
       let(:cleaner) { described_class.new tags_file: tags_file }
 
