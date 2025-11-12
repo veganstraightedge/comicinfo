@@ -5,7 +5,7 @@ RSpec.describe ComicInfo::FilenameCleaner do
     let(:subject) { described_class.new(tags: tags).clean(old_filename) }
 
     context 'single tag removal' do
-      let(:tags)         { ['Digital'] }
+      let(:tags)         { ['(Digital)'] }
       let(:old_filename) { 'Batman #1 (2021) (Digital).cbz' }
       let(:new_filename) { 'Batman #1 (2021).cbz' }
 
@@ -15,7 +15,7 @@ RSpec.describe ComicInfo::FilenameCleaner do
     end
 
     context 'multiple tag removal' do
-      let(:tags)         { %w[Digital Zone-Empire c2c] }
+      let(:tags)         { %w[(Digital) (Zone-Empire) (c2c)] }
       let(:old_filename) { 'Amazing Spider-Man #1 (2018) (Digital) (Zone-Empire) (c2c).cbr' }
       let(:new_filename) { 'Amazing Spider-Man #1 (2018).cbr' }
 
@@ -25,7 +25,7 @@ RSpec.describe ComicInfo::FilenameCleaner do
     end
 
     context 'whitespace normalization' do
-      let(:tags)         { %w[Digital] }
+      let(:tags)         { %w[(Digital)] }
       let(:old_filename) { '  Superman    #1   (2021)   (Digital)  .cbz' }
       let(:new_filename) { 'Superman #1 (2021).cbz' }
 
@@ -35,7 +35,7 @@ RSpec.describe ComicInfo::FilenameCleaner do
     end
 
     context 'no tags to remove' do
-      let(:tags)         { %w[Digital Scan] }
+      let(:tags)         { %w[(Digital) (Scan)] }
       let(:old_filename) { 'X-Men #1 (2019).cbz' }
       let(:new_filename) { 'X-Men #1 (2019).cbz' }
 
@@ -45,7 +45,7 @@ RSpec.describe ComicInfo::FilenameCleaner do
     end
 
     context 'partial tag match' do
-      let(:tags)         { %w[Digital] }
+      let(:tags)         { %w[(Digital)] }
       let(:old_filename) { 'Flash #1 (2020) (Digital HD).cbz' }
       let(:new_filename) { 'Flash #1 (2020) (Digital HD).cbz' }
 
@@ -55,7 +55,7 @@ RSpec.describe ComicInfo::FilenameCleaner do
     end
 
     context 'case sensitive tags' do
-      let(:tags)         { %w[Digital Scan] }
+      let(:tags)         { %w[(Digital) (Scan)] }
       let(:old_filename) { 'Wonder Woman #1 (2021) (digital).cbz' }
       let(:new_filename) { 'Wonder Woman #1 (2021) (digital).cbz' }
 
@@ -65,7 +65,7 @@ RSpec.describe ComicInfo::FilenameCleaner do
     end
 
     context 'complex filename with multiple spaces' do
-      let(:tags)         { %w[Digital Zone-Empire c2c] }
+      let(:tags)         { %w[(Digital) (Zone-Empire) (c2c)] }
       let(:old_filename) { 'Justice League   #1  (2018)   (Digital)  (Zone-Empire)   (c2c)  .cbr' }
       let(:new_filename) { 'Justice League #1 (2018).cbr' }
 
@@ -75,7 +75,7 @@ RSpec.describe ComicInfo::FilenameCleaner do
     end
 
     context 'special characters in tags' do
-      let(:tags)         { %w[Digital-HD Zone-Empire] }
+      let(:tags)         { %w[(Digital-HD) (Zone-Empire)] }
       let(:old_filename) { 'Deadpool #1 (2019) (Digital-HD) (Zone-Empire).cbz' }
       let(:new_filename) { 'Deadpool #1 (2019).cbz' }
 
@@ -90,6 +90,16 @@ RSpec.describe ComicInfo::FilenameCleaner do
       let(:new_filename) { 'Test File.cbz' }
 
       it 'only normalizes whitespace' do
+        expect(subject).to eq new_filename
+      end
+    end
+
+    context 'different delimiter types' do
+      let(:tags)         { ['[Digital]', '{Scan}', '(Zone-Empire)'] }
+      let(:old_filename) { 'Spider-Man #1 (2021) [Digital] {Scan} (Zone-Empire).cbz' }
+      let(:new_filename) { 'Spider-Man #1 (2021).cbz' }
+
+      it 'removes tags with brackets, braces, and parentheses' do
         expect(subject).to eq new_filename
       end
     end

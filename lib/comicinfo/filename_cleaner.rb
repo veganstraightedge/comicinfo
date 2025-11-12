@@ -8,8 +8,8 @@ module ComicInfo
       result = filename.dup
 
       @tags.each do |tag|
-        # Remove tags in parentheses, handling variations
-        result = result.gsub(/\s*\(#{Regexp.escape(tag)}\)/, '')
+        # Remove tags with their delimiters (parentheses, brackets, braces, etc.)
+        result = result.gsub(/\s*#{Regexp.escape(tag)}/, '')
       end
 
       # Clean up multiple spaces and trim, but preserve single space before extension
