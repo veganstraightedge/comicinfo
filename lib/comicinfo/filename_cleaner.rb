@@ -1,11 +1,8 @@
 module ComicInfo
   class FilenameCleaner
     def initialize tags: [], tags_file: nil
-      @tags = if tags_file
-                load_tags_from_file(tags_file)
-              else
-                Array(tags)
-              end
+      @tags = Array tags
+      @tags = load_tags_from_file tags_file if tags_file
     end
 
     def clean filename
