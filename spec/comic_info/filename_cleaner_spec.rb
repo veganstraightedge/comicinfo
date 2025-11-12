@@ -2,7 +2,8 @@ require 'spec_helper'
 
 RSpec.describe ComicInfo::FilenameCleaner do
   describe '#clean' do
-    let(:cleaned_filename) { described_class.new(tags: filename_tags).clean(old_filename) }
+    let(:cleaner) { described_class.new tags: filename_tags }
+    let(:cleaned_filename) { cleaner.clean old_filename }
 
     context 'when removing single tag' do
       let(:filename_tags) { ['(Digital)'] }
