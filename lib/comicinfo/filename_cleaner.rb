@@ -5,7 +5,7 @@ module ComicInfo
     end
 
     def clean filename
-      filename_extension = File.extname filename
+      filename_extension = File.extname  filename
       filename_base      = File.basename filename, filename_extension
 
       # Remove tags from filename
