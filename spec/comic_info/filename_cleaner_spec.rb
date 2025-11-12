@@ -154,9 +154,9 @@ RSpec.describe ComicInfo::FilenameCleaner do
         after  { ENV.delete environment_variable_name }
 
         it 'removes tags loaded from FILENAME_TAGS environment variable' do
-          cleaner = described_class.new tags_env: environment_variable_name
+          described_class.new tags_env: environment_variable_name
 
-          expect(cleaner.clean(old_filename)).to eq new_filename
+          expect(cleaned_filename).to eq new_filename
         end
       end
 
@@ -165,7 +165,35 @@ RSpec.describe ComicInfo::FilenameCleaner do
         let(:environment_variable_name) { 'NONEXISTENT_VAR' }
 
         it 'handles missing environment variable gracefully' do
-          expect(cleaner.clean(old_filename)).to eq old_filename
+          expect(cleaned_filename).to eq old_filename
+        end
+      end
+
+      context 'when CB_FILENAME_TAGS environment variable is set' do
+        let(:environment_variable_name) { 'CB_FILENAME_TAGS' }
+        let(:old_filename) { 'Batman #1 (2021) (Digital) [Scan] {c2c}.cbz' }
+        let(:new_filename) { 'Batman #1 (2021).cbz' }
+        let(:cleaner) { described_class.new }
+
+        before { ENV[environment_variable_name] = '(Digital),[Scan],{c2c}' }
+        after  { ENV.delete environment_variable_name }
+
+        it 'uses CB_FILENAME_TAGS by default when set' do
+          expect(cleaned_filename).to eq new_filename
+        end
+
+        it 'does nothing when CB_FILENAME_TAGS is not set' do
+          ENV.delete 'CB_FILENAME_TAGS'
+          expect(cleaned_filename).to eq old_filename
+        end
+
+        context 'with default ENV var and tags argument' do
+          let(:filename_tags) { %w[(Digital)] }
+          let(:cleaner) { described_class.new tags: filename_tags }
+
+          it 'overrides CB_FILENAME_TAGS environment variable with tags argument' do
+            expect(cleaned_filename).to eq 'Batman #1 (2021) [Scan] {c2c}.cbz'
+          end
         end
       end
     end

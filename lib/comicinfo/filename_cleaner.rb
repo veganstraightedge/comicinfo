@@ -1,13 +1,9 @@
 module ComicInfo
   class FilenameCleaner
-    def initialize tags: [], tags_file: nil, tags_env: nil
-      @tags = if tags_env
-                load_tags_from_env_var tags_env
-              elsif tags_file
-                load_tags_from_file tags_file
-              else
-                Array tags
-              end
+    DEFAULT_ENVIRONMENT_VARIABLE = 'CB_FILENAME_TAGS'.freeze
+
+    def initialize tags: nil, tags_file: nil, tags_env: nil
+      @tags = Array load_tags(tags: tags, tags_file: tags_file, tags_env: tags_env)
     end
 
     def clean filename
@@ -31,6 +27,18 @@ module ComicInfo
     end
 
     private
+
+    def load_tags tags: nil, tags_file: nil, tags_env: nil
+      if tags_env
+        load_tags_from_env_var tags_env
+      elsif tags_file
+        load_tags_from_file tags_file
+      elsif tags
+        tags
+      else
+        load_tags_from_env_var DEFAULT_ENVIRONMENT_VARIABLE
+      end
+    end
 
     def load_tags_from_file file_path
       tag_lines = File.readlines file_path, chomp: true

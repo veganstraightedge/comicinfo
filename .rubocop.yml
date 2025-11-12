@@ -54,6 +54,9 @@ Metrics/PerceivedComplexity:
 RSpec/ExampleLength:
   Enabled: false
 
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
 RSpec/MultipleExpectations:
   Enabled: false
 
