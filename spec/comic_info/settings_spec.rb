@@ -11,9 +11,9 @@ RSpec.describe ComicInfo::Settings do
   after { FileUtils.rm_rf temp_dir } # Clean up test directory
 
   describe '.create' do
-    context 'with default settings' do
-      subject(:filename_tags) { settings['filename_tags'] }
+    subject(:filename_tags) { settings['filename_tags'] }
 
+    context 'with default settings' do
       let(:settings) { YAML.load_file settings_path }
       let(:settings_path) { test_settings_path }
 
