@@ -4,8 +4,8 @@
 - [x] strip leading/trailing whitespace
 - [x] squish consecutive whitespaces
 - [x] remove FilenameTags
-- [ ] from a user-defined list of FilenameTags
-  - [ ] from a file, one FilenameTag per line
+- [ ] from a user-defined list of FilenameTags 
+  - [x] from a file, one FilenameTag per line 
   - [ ] an ENV var
   - [ ] args passed into CLI
   - [x] args passed into a method

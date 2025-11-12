@@ -1,7 +1,11 @@
 module ComicInfo
   class FilenameCleaner
-    def initialize tags: []
-      @tags = Array tags
+    def initialize tags: [], tags_file: nil
+      @tags = if tags_file
+                load_tags_from_file(tags_file)
+              else
+                Array(tags)
+              end
     end
 
     def clean filename
@@ -22,6 +26,12 @@ module ComicInfo
 
       # Put the filename back together
       filename_base + filename_extension
+    end
+
+    private
+
+    def load_tags_from_file file_path
+      File.readlines(file_path, chomp: true).reject(&:empty?)
     end
   end
 end
