@@ -1,22 +1,27 @@
 module ComicInfo
   class FilenameCleaner
     def initialize tags: []
-      @tags = Array(tags)
+      @tags = Array tags
     end
 
     def clean filename
-      result = filename.dup
+      filename_extension = File.extname filename
+      filename_base      = File.basename filename, filename_extension
 
-      @tags.each do |tag|
-        # Remove tags with their delimiters (parentheses, brackets, braces, etc.)
-        result = result.gsub(/\s*#{Regexp.escape(tag)}/, '')
-      end
+      # Remove tags from filename
+      @tags.each { filename_base.gsub! it, '' }
 
-      # Clean up multiple spaces and trim, but preserve single space before extension
-      result = result.gsub(/\s+/, ' ').strip
+      # Remove line breaks
+      filename_base.chomp!
 
-      # Remove space before file extension
-      result.gsub(/\s+\.([^.]+)$/, '.\1')
+      # Remove leading and trailing blank spaces
+      filename_base.strip!
+
+      # Remove multiple blank spaces
+      filename_base.squeeze! ' '
+
+      # Put the filename back together
+      filename_base + filename_extension
     end
   end
 end
