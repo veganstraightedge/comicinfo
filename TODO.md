@@ -4,13 +4,13 @@
 - [x] strip leading/trailing whitespace
 - [x] squish consecutive whitespaces
 - [x] remove FilenameTags
-- [ ] from a user-defined list of FilenameTags 
-  - [x] from a file, one FilenameTag per line 
+- [ ] from a user-defined list of FilenameTags
+  - [x] from a file, one FilenameTag per line
   - [x] an ENV var
   - [ ] args passed into CLI
   - [x] args passed into a method
 - [x] the ability to create a longbox settings yaml file (default: ~/.longbox/settings.yaml)
-  - [ ] the ability to add/remove FilenameTags to/from that settings yaml file
+  - [x] the ability to add/remove FilenameTags to/from that settings yaml file
 
 ## Notes
 - FilenameTags are attribution markers often, but not always, in parentheses found in .cbr/.cbz/.cb* filenames
