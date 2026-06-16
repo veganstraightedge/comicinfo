@@ -4,7 +4,7 @@ A Ruby gem that provides an idiomatic interface for reading and writing ComicInf
 following the official ComicInfo schema specifications from the
 [Anansi Project](https://github.com/anansi-project/comicinfo).
 
-![Ruby](https://img.shields.io/badge/ruby-%3E%3D%203.4.6-ruby.svg)
+![Ruby](https://img.shields.io/badge/ruby-%3E%3D%204.0.5-ruby.svg)
 ![Gem Version](https://badge.fury.io/rb/comicinfo.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 

@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/veganstraightedge/comicinfo'
   spec.license  = 'MIT'
 
-  spec.required_ruby_version = '>= 3.4.6'
+  spec.required_ruby_version = '>= 4.0.5'
 
   spec.metadata['allowed_push_host'] = 'https://rubygems.org'
   spec.metadata['homepage_uri']      = spec.homepage
@@ -50,5 +50,5 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'exe'
 
   # Runtime dependencies
-  spec.add_dependency 'nokogiri', '>= 1.18.10'
+  spec.add_dependency 'nokogiri', '>= 1.19.3'
 end
