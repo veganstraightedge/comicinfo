@@ -13,7 +13,7 @@ following the official ComicInfo schema specifications from the Anansi Project.
 ## Code Standards
 
 ### Ruby Version
-- Minimum required: Ruby 3.4.6+
+- Minimum required: Ruby 4.0.5+
 - Use modern Ruby features and syntax patterns
 
 ### Dependencies
