@@ -50,5 +50,5 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'exe'
 
   # Runtime dependencies
-  spec.add_dependency 'nokogiri', '>= 1.18.10'
+  spec.add_dependency 'nokogiri', '>= 1.19.3'
 end
