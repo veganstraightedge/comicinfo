@@ -78,7 +78,7 @@ puts comic.cover_artist #=> "Ryan Ottley"
 
 # Content details
 puts comic.page_count   #=> 20
-puts comic.genre        #=> "Superhero, Action, Adventure"
+puts comic.genres       #=> ["Superhero", "Action", "Adventure"]
 puts comic.language_iso #=> "en-US"
 puts comic.format       #=> "Digital"
 
@@ -136,6 +136,11 @@ page = comic.pages.first
 puts page.cover?   #=> true for FrontCover, BackCover, InnerCover
 puts page.story?   #=> true for Story pages
 puts page.deleted? #=> true for Deleted pages
+
+# A page can carry more than one type (space-separated in the XML)
+puts page.type                  #=> "FrontCover"
+puts page.types                 #=> ["FrontCover"]
+puts page.include_type? 'Story' #=> false
 ```
 
 ### Manga Support
@@ -200,7 +205,10 @@ This gem fully supports the ComicInfo v2.0 XSD schema with all field types:
 - AgeRating: Various ESRB and international ratings
 
 ### Decimal Fields
-- CommunityRating: 0.0 to 5.0 range with validation
+- CommunityRating: 0.0 to 5.0 range with validation (a `Float`, `nil` when absent)
+
+### Default Values
+- Missing string fields are `""`, missing integer fields are `-1`, missing enum fields are `"Unknown"`
 
 ### Complex Fields
 - Pages: Array of ComicPageInfo objects with full attribute support
@@ -292,12 +300,11 @@ bundle exec rubocop --autocorrect
 - **Schema Compliance**: Full ComicInfo v2.0 support
 - **Field Types**: String, Integer, Decimal, Enum, Boolean, Arrays
 - **Multi-value Fields**: Both string and array access methods
-- **Issue &Page Support**: Complete Issue and nested Page objects
+- **Issue & Page Support**: Complete Issue and nested Page objects
 - **Error Handling**: Custom exceptions with detailed messages
 - **Data Export**: JSON, YAML, and XML serialization
 - **Validation**: Enum values, ranges, type coercion
 - **Unicode Support**: International characters and special symbols
-- **Test Coverage**: 178 comprehensive test cases
 
 ### Planned Features 🚧
 - **CLI Tool**: Command-line interface for file manipulation

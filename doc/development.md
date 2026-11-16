@@ -13,13 +13,13 @@ following the official ComicInfo schema specifications from the Anansi Project.
 ## Code Standards
 
 ### Ruby Version
-- Minimum required: Ruby 4.0.5+
+- Minimum required: Ruby 4.0.9+
 - Use modern Ruby features and syntax patterns
 
 ### Dependencies
-- **nokogiri** (>= 1.18.10): XML parsing and generation
-- **rspec** (>= 3.13.1): Testing framework
-- **rubocop** (>= 1.81.1): Code linting and formatting
+- **nokogiri** (>= 1.19.3): XML parsing and generation (the only runtime dependency)
+- **rspec**: Testing framework
+- **rubocop** (with `rubocop-performance`, `rubocop-rake`, `rubocop-rspec`): Code linting and formatting
 
 ### Code Style
 - Follow RuboCop rules (configured in `.rubocop.yml`)
@@ -52,10 +52,16 @@ spec/
 │   ├─ issue_spec.rb          # ComicInfo::Issue class specs
 │   └─ page_spec.rb           # ComicInfo::Page class specs
 └─ fixtures/                   # XML test fixtures
-│       ├─ valid_minimal.xml
-│       ├─ valid_complete.xml
-│       ├─ invalid_xml.xml
-│       └─ edge_cases/
+    ├─ valid_minimal.xml
+    ├─ valid_complete.xml
+    ├─ invalid_xml.xml
+    ├─ edge_cases/
+    └─ output/                # Scratch space for write specs
+schemas/                       # ComicInfo XSD files (1.0, 2.0, 2.1-draft)
+script/
+└─ schema                      # Downloads the XSD files into schemas/
+sig/
+└─ comicinfo.rbs               # RBS signatures
 ```
 
 ## API Design Principles
@@ -73,13 +79,13 @@ comic.count  #=> Integer
 comic.pages  #=> Array<ComicInfo::Page>
 comic.black_and_white #=> String (enum value)
 
-# Multi-value fields have both singular and plural methods
-comic.character  #=> String (comma-separated)
-comic.characters #=> Array<String>
-comic.genre      #=> String (comma-separated)
-comic.genres     #=> Array<String>
-comic.web        #=> String (space-separated URLs)
-comic.web_urls   #=> Array<String>
+# Multi-value fields have a plural method and a raw data method
+comic.characters          #=> Array<String>
+comic.characters_raw_data #=> String (comma-separated)
+comic.genres              #=> Array<String>
+comic.genres_raw_data     #=> String (comma-separated)
+comic.web_urls            #=> Array<String>
+comic.web                 #=> String (space-separated URLs)
 ```
 
 ### Naming Conventions
@@ -90,10 +96,12 @@ comic.web_urls   #=> Array<String>
   - XML `<BlackAndWhite>` → Ruby `#black_and_white`
   - XML `<CommunityRating>` → Ruby `#community_rating`
 - Multi-value fields:
-  - Singular method returns original string from XML
   - Plural method returns array of split values
-  - XML `<Characters>` → Ruby `#character` (string) & `#characters` (array)
-  - XML `<Teams>` → Ruby `#team` (string) & `#teams` (array)
+  - `_raw_data` method returns original string from XML
+  - XML `<Characters>` → Ruby `#characters` (array) & `#characters_raw_data` (string)
+  - XML `<Teams>` → Ruby `#teams` (array) & `#teams_raw_data` (string)
+  - Where the schema element is singular, the singular method is an alias of the plural:
+    `#genre`, `#story_arc`, `#story_arc_number` return arrays
 
 ### Error Handling
 - Define custom exception classes in `ComicInfo::Errors`
@@ -138,13 +146,13 @@ bundle exec rspec --format documentation
 
 ### Multi-value Fields
 - Handle comma-separated values in fields like Genre, Characters
-- Provide both string and array access methods
+- Provide both string (`_raw_data`) and array (plural) access methods
 - Preserve original formatting when possible
 
 ### Type Coercion
 - String fields: preserve as-is from XML
 - Integer fields: convert with proper error handling
-- Decimal fields: use BigDecimal for precision
+- Decimal fields: convert to Float with proper error handling
 - Boolean attributes: handle "true"/"false" strings
 
 ### Default Values
@@ -152,6 +160,7 @@ bundle exec rspec --format documentation
 - Empty strings for string fields
 - -1 for unset integer fields
 - "Unknown" for enum fields where applicable
+- `nil` for an unset CommunityRating
 
 ## Testing Strategy
 
@@ -197,9 +206,9 @@ RSpec.describe ComicInfo::Issue do
   end
 
   describe 'multi-value fields' do
-    describe 'singular methods (return strings)' do
-      it 'returns character as comma-separated string' do
-        expect(complete_comic.character).to eq 'Spider-Man, Peter Parker'
+    describe 'raw data methods (return strings)' do
+      it 'returns characters as comma-separated string' do
+        expect(complete_comic.characters_raw_data).to eq 'Spider-Man, Peter Parker'
       end
     end
 
@@ -235,21 +244,19 @@ end
 - Maintain comprehensive README with examples
 - Document all public methods with YARD comments
 - Include schema field descriptions in code comments
-- Support multiple schema versions (1.0, 2.0, 2.1-draft)
+- Only schema 2.0 is implemented; the 1.0 and 2.1-draft XSD files are kept in `schemas/` for reference
 
 ## Implementation Status
 - ✅ Core reading functionality complete
+- ✅ XML writing (`#to_xml`, `#save`)
+- ✅ JSON, YAML and Hash export (`#to_json`, `#to_yaml`, `#to_h`)
 - ✅ All schema fields implemented and tested
-- ✅ Comprehensive test suite (156 test cases)
 - ✅ Error handling with custom exception classes
-- ✅ Multi-value field support (singular/plural methods)
+- ✅ Multi-value field support (plural and `_raw_data` methods)
 - ✅ Page objects with full attribute support
 - ✅ Enum validation and type coercion
 - ✅ Unicode and special character handling
 
 ## Future Considerations
-- XML writing/generation capabilities (.to_xml method)
-- JSON export (.to_json method) - **Partially implemented**
-- YAML export (.to_yaml method) - **Partially implemented**
 - Schema version detection and migration
 - CLI tool for ComicInfo manipulation
