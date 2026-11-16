@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Bump Ruby version from 3.4.6 to 4.0.9 (`.ruby-version`, `required_ruby_version`, rubocop `TargetRubyVersion`, CI matrix)
 - Update RuboCop to 1.87.0 (supports Ruby 4.0 `TargetRubyVersion`)
+- Corrected the README and `doc/development.md` where they described methods that do not exist (`#character`, `#team`) or the wrong return types (`#genre` returns an array, `CommunityRating` is a `Float`), and dropped already-shipped features from the future list
 
 ## [2.0.0] - 2025-11-10
 
