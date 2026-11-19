@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-11-19
+
 ### Added
 - `ComicInfo::Issue#rearranging_pages(order)`: a copy of the issue with its `<Page>` entries and `PageCount` brought up to date after page images were reordered, deleted, or added. Entries follow their image to its new index, deleted pages lose theirs, and new pages get a default entry when the issue has page entries at all
 - `ComicInfo::Issue#page_type(at:)` and `ComicInfo::Issue#setting_page_type(type, at:)`: read and set the type of a page image by its index. A page with no `<Page>` entry is a Story page; setting another type on it adds an entry, and an existing entry keeps its other details
