@@ -51,6 +51,7 @@ spec/
 ├─ comic_info_spec.rb          # Main module specs
 ├─ comic_info/
 │   ├─ filename_template_spec.rb # File name template specs
+│   ├─ issue_pages_spec.rb    # Changing an issue's page entries
 │   ├─ issue_spec.rb          # ComicInfo::Issue class specs
 │   └─ page_spec.rb           # ComicInfo::Page class specs
 └─ fixtures/                   # XML test fixtures

@@ -49,6 +49,16 @@ module ComicInfo
       types.include?(type)
     end
 
+    # The same page entry pointing at a different image index
+    def with_image image
+      Page.new to_h.merge(image:)
+    end
+
+    # The same page entry with a different type, which replaces every type it had
+    def with_type type
+      Page.new to_h.merge(type:)
+    end
+
     # Get image dimensions as a hash
     def dimensions
       {

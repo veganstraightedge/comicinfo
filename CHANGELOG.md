@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `ComicInfo::Issue#rearranging_pages(order)`: a copy of the issue with its `<Page>` entries and `PageCount` brought up to date after page images were reordered, deleted, or added. Entries follow their image to its new index, deleted pages lose theirs, and new pages get a default entry when the issue has page entries at all
+- `ComicInfo::Issue#page_type(at:)` and `ComicInfo::Issue#setting_page_type(type, at:)`: read and set the type of a page image by its index. A page with no `<Page>` entry is a Story page; setting another type on it adds an entry, and an existing entry keeps its other details
+- `ComicInfo::Page#with_image(image)` and `ComicInfo::Page#with_type(type)`: a copy of a page entry pointing at another image, or with another type
 - `ComicInfo::Issue#filename(template:)`: a file name for the issue from a template such as `{series} #{number} ({year})` ("Saga #1 (2012)"). Missing values are left out along with the decoration around them, `/` and `:` in values become `-`, and `{number:3}` pads the issue number with zeros ("Saga #001")
 - `ComicInfo::Issue#page_filename(template:, page:, of:)`: a file name for one page image, from a template such as `page_{page:3}` or `{series}_{number:3}_{page:4}`. The page number is always at least as wide as the page count, and a template without one gets it appended, so the names keep pages apart and in order
 - `ComicInfo::FilenameTemplate`, which does the filling in, with the tokens it knows in `TOKENS` and `PAGE_TOKENS`

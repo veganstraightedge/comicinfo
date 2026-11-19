@@ -163,6 +163,24 @@ puts page.types                 #=> ["FrontCover"]
 puts page.include_type? 'Story' #=> false
 ```
 
+### Changing Pages
+
+An issue is not changed in place. These return a changed copy, which you can `save` or turn `to_xml`.
+
+```ruby
+# A page's type, by its image index. A page with no <Page> entry is a Story page.
+comic.page_type at: 0 #=> "FrontCover"
+
+# Give a page a type. Its entry keeps everything else; a page with no entry gets one.
+updated = comic.setting_page_type 'Advertisement', at: 4
+
+# Bring the <Page> entries and PageCount up to date after the page images were reordered,
+# deleted, or added to. Each item is the index that image had before, or nil for a new image.
+# Here the third page moves to the front, the second is deleted, and a new page is added.
+updated = comic.rearranging_pages [2, 0, nil]
+updated.save 'ComicInfo.xml'
+```
+
 ### Manga Support
 
 ```ruby
@@ -326,6 +344,7 @@ bundle exec rubocop --autocorrect
 - **Validation**: Enum values, ranges, type coercion
 - **Unicode Support**: International characters and special symbols
 - **File Names**: Comic and page file names from templates
+- **Page Changes**: Set a page's type, and keep page entries in step with reordered, deleted, and added pages
 
 ### Planned Features 🚧
 - **CLI Tool**: Command-line interface for file manipulation
