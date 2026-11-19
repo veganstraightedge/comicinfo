@@ -121,6 +121,26 @@ story_arc      = comic.story_arc      #=> ["Brand New Day", "Spider-Island"] (sa
 story_arc_num  = comic.story_arc_number #=> ["1", "5"] (same as story_arc_numbers)
 ```
 
+### File Names from Templates
+
+Name a comic's file, or its page image files, from its details. The result has no extension.
+
+```ruby
+comic.filename template: '{series} #{number} ({year})' #=> "Saga #1 (2012)"
+comic.filename template: '{series} #{number:3}'        #=> "Saga #001"
+
+comic.page_filename template: 'page_{page:3}', page: 1, of: 22                 #=> "page_001"
+comic.page_filename template: '{series}_{number:3}_{page:4}', page: 12, of: 22 #=> "Saga_001_0012"
+```
+
+Write templates in single quotes: in double quotes Ruby reads `#{number}` as interpolation.
+
+- **Tokens**: `{number}` `{publisher}` `{series}` `{title}` `{volume}` `{year}`, and `{page}` in a page template. They are listed in `ComicInfo::FilenameTemplate::TOKENS` and `PAGE_TOKENS`.
+- **Padding**: `{number:3}` and `{page:3}` pad with zeros to that many digits. Only the whole number a value starts with is padded: `1.5` becomes `001.5` and `12AU` becomes `012AU`.
+- **Missing values** are left out along with the decoration around them: `Saga # ()` becomes `Saga`.
+- **`/` and `:`** in a value become `-`, since they cannot be part of a file name.
+- **Page names always sort in page order**: the page number is at least as wide as the page count (page 2 of 10 is `02`), and a template without `{page}` gets the number appended.
+
 ### Working with Pages
 
 ```ruby
@@ -305,6 +325,7 @@ bundle exec rubocop --autocorrect
 - **Data Export**: JSON, YAML, and XML serialization
 - **Validation**: Enum values, ranges, type coercion
 - **Unicode Support**: International characters and special symbols
+- **File Names**: Comic and page file names from templates
 
 ### Planned Features 🚧
 - **CLI Tool**: Command-line interface for file manipulation

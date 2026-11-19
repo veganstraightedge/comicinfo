@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `ComicInfo::Issue#filename(template:)`: a file name for the issue from a template such as `{series} #{number} ({year})` ("Saga #1 (2012)"). Missing values are left out along with the decoration around them, `/` and `:` in values become `-`, and `{number:3}` pads the issue number with zeros ("Saga #001")
+- `ComicInfo::Issue#page_filename(template:, page:, of:)`: a file name for one page image, from a template such as `page_{page:3}` or `{series}_{number:3}_{page:4}`. The page number is always at least as wide as the page count, and a template without one gets it appended, so the names keep pages apart and in order
+- `ComicInfo::FilenameTemplate`, which does the filling in, with the tokens it knows in `TOKENS` and `PAGE_TOKENS`
+
 ### Changed
 - Bump Ruby version from 3.4.6 to 4.0.9 (`.ruby-version`, `required_ruby_version`, rubocop `TargetRubyVersion`, CI matrix)
 - Update RuboCop to 1.87.0 (supports Ruby 4.0 `TargetRubyVersion`)
