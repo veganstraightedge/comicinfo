@@ -41,6 +41,7 @@ lib/
 ├─ comicinfo.rb                # Main module and autoloads
 ├─ comicinfo/
 │   ├─ version.rb             # Gem version constant
+│   ├─ filename_template.rb   # File names from templates, for Issue#filename and #page_filename
 │   ├─ issue.rb               # Main ComicInfo::Issue class
 │   ├─ page.rb                # ComicInfo::Page class
 │   ├─ enums.rb               # Schema enum definitions
@@ -49,6 +50,7 @@ spec/
 ├─ spec_helper.rb              # RSpec configuration with FixtureHelpers
 ├─ comic_info_spec.rb          # Main module specs
 ├─ comic_info/
+│   ├─ filename_template_spec.rb # File name template specs
 │   ├─ issue_spec.rb          # ComicInfo::Issue class specs
 │   └─ page_spec.rb           # ComicInfo::Page class specs
 └─ fixtures/                   # XML test fixtures

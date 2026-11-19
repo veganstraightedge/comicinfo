@@ -5,6 +5,7 @@ require 'yaml'
 require 'fileutils'
 require_relative 'enums'
 require_relative 'errors'
+require_relative 'filename_template'
 require_relative 'page'
 
 module ComicInfo
@@ -118,6 +119,18 @@ module ComicInfo
       return [] unless pages?
 
       @pages.select(&:story?)
+    end
+
+    # A file name for this issue, without an extension, made by filling in a template such as
+    # "{series} #{number} ({year})". See FilenameTemplate for the tokens and rules.
+    def filename template:
+      FilenameTemplate.new(template).filename self
+    end
+
+    # A file name for one of this issue's page images, without an extension, made by filling in a
+    # template such as "page_{page:3}". See FilenameTemplate for the tokens and rules.
+    def page_filename template:, page:, of:
+      FilenameTemplate.new(template).page_filename self, page:, of:
     end
 
     # Get publication date as Date object if available
