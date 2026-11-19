@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ComicInfo>
+  <Title>Saga</Title>
+  <PageCount>4</PageCount>
+  <Pages>
+    <Page Image="0" Type="FrontCover" ImageSize="100" />
+    <Page Image="1" Type="Story Preview" DoublePage="true" Bookmark="Chapter 1" />
+    <Page Image="3" Type="BackCover" />
+  </Pages>
+</ComicInfo>

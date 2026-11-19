@@ -133,6 +133,64 @@ module ComicInfo
       FilenameTemplate.new(template).page_filename self, page:, of:
     end
 
+    # The same issue after its page images were reordered, deleted, or added to.
+    #
+    # A <Page> entry points at its image by index, so when the images change the entries must
+    # follow. `order` describes the new images: order[i] is the index the image now at position i
+    # had before, or nil for an image that is new.
+    #
+    #   # Three pages; the last is moved to the front and a new page is appended.
+    #   updated = issue.rearranging_pages [2, 0, 1, nil]
+    #
+    # - A page keeps its entry (type, bookmark, sizes) under its new index.
+    # - A deleted page loses its entry.
+    # - A page that had no entry still has none.
+    # - A new page gets a default entry, but only if the issue has page entries at all.
+    # - page_count becomes the new number of pages, but only if it was set.
+    #
+    # Returns a copy; this issue is not changed.
+    def rearranging_pages order
+      rearranged = rearranged_pages order
+      count      = @page_count == Enums::DEFAULT_PAGE_COUNT ? @page_count : order.length
+
+      with_pages rearranged, page_count: count
+    end
+
+    # The type of the page image at an index (0-based, as in Page#image).
+    #
+    # This is the first type of that image's <Page> entry. A page with no entry is a Story page,
+    # as the schema says.
+    def page_type at:
+      entry = @pages.find { it.image == at }
+      entry ? entry.types.first : Enums::DEFAULT_PAGE_TYPE
+    end
+
+    # The same issue with the page image at an index given a type.
+    #
+    #   updated = issue.setting_page_type 'FrontCover', at: 0
+    #
+    # - The page's entry keeps everything else it has (bookmark, sizes); the type replaces all of
+    #   the types it had.
+    # - A page with no entry gets one, placed in image order.
+    # - Setting Story on a page with no entry changes nothing, since that is already its type.
+    #
+    # Returns a copy; this issue is not changed. Raises Errors::InvalidEnumError for a type the
+    # schema does not have.
+    def setting_page_type type, at:
+      Enums::Validators.validate_comic_page_type type
+      position = @pages.index { it.image == at }
+
+      if position
+        updated           = @pages.dup
+        updated[position] = @pages[position].with_type type
+        return with_pages updated, page_count: @page_count
+      end
+      return self if type == Enums::DEFAULT_PAGE_TYPE
+
+      added = [*@pages, Page.new(image: at, type:)]
+      with_pages added.sort_by(&:image), page_count: @page_count
+    end
+
     # Get publication date as Date object if available
     def publication_date
       return nil if @year == Enums::DEFAULT_INTEGER
@@ -328,7 +386,29 @@ module ComicInfo
       }.compact
     end
 
+    protected
+
+    attr_writer :pages, :page_count
+
     private
+
+    # The same issue with different page entries and page count
+    def with_pages pages, page_count:
+      copy            = dup
+      copy.pages      = pages
+      copy.page_count = page_count
+      copy
+    end
+
+    def rearranged_pages order
+      return [] if @pages.empty?
+
+      order.each_with_index.filter_map do |previous_index, new_index|
+        next Page.new(image: new_index) if previous_index.nil?
+
+        @pages.find { it.image == previous_index }&.with_image new_index
+      end
+    end
 
     def parse_fields
       # String fields

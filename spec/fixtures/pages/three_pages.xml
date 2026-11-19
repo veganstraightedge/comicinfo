@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ComicInfo>
+  <Title>Saga</Title>
+  <Year>2012</Year>
+  <PageCount>3</PageCount>
+  <Pages>
+    <Page Image="0" Type="FrontCover" ImageSize="100" />
+    <Page Image="1" Type="Story" Bookmark="Chapter 1" />
+    <Page Image="2" Type="BackCover" />
+  </Pages>
+</ComicInfo>
