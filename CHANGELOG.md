@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-11-26
+
 ### Fixed
 - `ComicInfo::Issue#web_urls` takes a link without a scheme, such as `example.org`, to be `https://example.org`, and leaves out links that aren't valid URLs. It no longer gives an empty first entry when the web field starts with whitespace. The stored web text is unchanged
 
