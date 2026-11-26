@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-26
+
 ### Added
 - `ComicInfo::Issue#with_characters`, `#with_genres`, `#with_locations`, `#with_teams`: a copy of the issue with that list changed, the counterparts of `#characters`, `#genres`, `#locations` and `#teams`. Each value is trimmed, and empty values and repeats are dropped. A comma inside a value becomes a space, so it reads back as one entry. An empty list removes the field
 - `ComicInfo::Issue#web_links`: every entry of the web field, split on whitespace
