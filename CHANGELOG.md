@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-11-26
+
 ### Added
 - `ComicInfo::Match`: one search result from a metadata source, with the source's `id` for the issue, a `heading` and `details` to pick it by, and its page on the source's site, `site_url`
 - `ComicInfo::Issue#rank(matches)`: matches ordered best first for the issue: a series named exactly as the issue's, then a cover dated in its year. Otherwise the source's order stands
