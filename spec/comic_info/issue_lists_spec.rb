@@ -70,6 +70,19 @@ RSpec.describe ComicInfo::Issue do
     end
   end
 
+  describe '#web_urls' do
+    it 'assumes https for a link without a scheme, and splits on any whitespace' do
+      issue = load_fixture 'lists/schemeless_web.xml'
+
+      expect(issue.web_urls).to eq %w[
+        https://example.org
+        https://dc.com/comics
+        http://example.com
+        mailto:a@example.com
+      ]
+    end
+  end
+
   describe '#with_web_links' do
     it 'joins links with spaces, dropping empty values and repeats' do
       links = [' https://example.com', '', 'https://example.org', 'https://example.com']

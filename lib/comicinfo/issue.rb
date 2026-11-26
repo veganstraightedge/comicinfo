@@ -3,6 +3,7 @@ require 'date'
 require 'json'
 require 'yaml'
 require 'fileutils'
+require 'uri'
 require_relative 'enums'
 require_relative 'errors'
 require_relative 'filename_template'
@@ -214,10 +215,14 @@ module ComicInfo
     def story_arcs        = split_comma_separated @story_arc
     def story_arc_numbers = split_comma_separated @story_arc_number
 
+    # The web links as URLs. A link without a scheme, such as example.org, is taken to be
+    # https://example.org. Links that aren't valid URLs are left out.
     def web_urls
-      return [] if @web.empty?
-
-      @web.split(/\s+/)
+      web_links.filter_map do |link|
+        URI.parse(link).scheme ? link : "https://#{link}"
+      rescue URI::InvalidURIError
+        nil
+      end
     end
 
     # Every entry of the web field, split on whitespace and kept as text.
