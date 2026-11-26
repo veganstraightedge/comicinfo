@@ -134,6 +134,17 @@ module ComicInfo
       FilenameTemplate.new(template).page_filename self, page:, of:
     end
 
+    # The matches a metadata source found for this issue, best first.
+    #
+    # A series named exactly as this issue's (ignoring case and surrounding space) counts most,
+    # then a cover dated in this issue's year. So a wrong year, from a file name say, can only
+    # reorder the right match, never hide it. Otherwise the source's own order stands.
+    #
+    #   ranked = issue.rank matches
+    def rank matches
+      matches.sort_by.with_index { |match, index| [-points_for(match), index] }
+    end
+
     # The same issue after its page images were reordered, deleted, or added to.
     #
     # A <Page> entry points at its image by index, so when the images change the entries must
@@ -439,6 +450,16 @@ module ComicInfo
       copy.page_count = page_count
       copy
     end
+
+    # How well a match fits this issue, for #rank
+    def points_for match
+      same_series = !@series.strip.empty? && normalized_name(match.series) == normalized_name(@series)
+      same_year   = @year != Enums::DEFAULT_INTEGER && match.cover_date.to_s.start_with?("#{@year}-")
+
+      (same_series ? 2 : 0) + (same_year ? 1 : 0)
+    end
+
+    def normalized_name(name) = name.to_s.strip.downcase
 
     def rearranged_pages order
       return [] if @pages.empty?
