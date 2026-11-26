@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `ComicInfo::Issue.joined_list(values)`: joins a list of characters, teams, locations, genres and so on back into the comma-separated value the XML holds. Each value is trimmed, and empty values and repeats are dropped. A comma inside a value becomes a space, so it reads back as one entry. An empty list gives `nil`
+- `ComicInfo::Issue#web_links`: every entry of the web field, split on whitespace
+- `ComicInfo::Issue.joined_web(links)`: joins web links back into the space-separated web value
+
 ## [2.1.0] - 2026-11-19
 
 ### Added

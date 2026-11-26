@@ -119,6 +119,11 @@ story_arcs_raw = comic.story_arcs_raw_data #=> "Brand New Day, Spider-Island"
 genre          = comic.genre          #=> ["Superhero", "Action", "Adventure"] (same as genres)
 story_arc      = comic.story_arc      #=> ["Brand New Day", "Spider-Island"] (same as story_arcs)
 story_arc_num  = comic.story_arc_number #=> ["1", "5"] (same as story_arc_numbers)
+
+# Lists back into the values the XML holds (nil when there is nothing to write)
+ComicInfo::Issue.joined_list ['Action', ' Adventure', 'Action'] #=> "Action, Adventure"
+ComicInfo::Issue.joined_web ['https://marvel.com/...', 'https://comicvine.com/...'] #=> "https://marvel.com/... https://comicvine.com/..."
+web_links = comic.web_links #=> ["https://marvel.com/...", "https://comicvine.com/..."]
 ```
 
 ### File Names from Templates

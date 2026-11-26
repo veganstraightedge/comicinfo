@@ -220,6 +220,35 @@ module ComicInfo
       @web.split(/\s+/)
     end
 
+    # Every entry of the web field, split on whitespace and kept as text.
+    def web_links = @web.split
+
+    # Joins a list (characters, teams, locations, genres, ...) into a comma-separated value.
+    # Each value is trimmed, and empty values and repeats are dropped. A comma inside a value
+    # would split it in two when read back, so it becomes a space.
+    # Returns nil when there is nothing to write.
+    def self.joined_list values
+      cleaned = values.map { it.tr(',', ' ').split.join(' ') }
+
+      joined cleaned, separator: ', '
+    end
+
+    # Joins web links into a space-separated value. An entry with whitespace in it becomes
+    # several links, as it would be read back. Empty entries and repeats are dropped.
+    # Returns nil when there is nothing to write.
+    def self.joined_web links
+      split = links.flat_map(&:split)
+
+      joined split, separator: ' '
+    end
+
+    def self.joined values, separator:
+      kept = values.reject(&:empty?).uniq
+
+      kept.join separator unless kept.empty?
+    end
+    private_class_method :joined
+
     # Raw data methods that return the original string values
     def genres_raw_data            = @genre
     def characters_raw_data        = @character
