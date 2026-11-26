@@ -220,6 +220,21 @@ module ComicInfo
       @web.split(/\s+/)
     end
 
+    # Every entry of the web field, split on whitespace and kept as text.
+    def web_links = @web.split
+
+    # The same issue with these characters, genres, locations, or teams.
+    # Each value is trimmed, and empty values and repeats are dropped. A comma inside a value
+    # would split it in two when read back, so it becomes a space. An empty list removes the field.
+    def with_characters(characters) = copy_with { it.character = comma_separated characters }
+    def with_genres(genres)        = copy_with { it.genre     = comma_separated genres }
+    def with_locations(locations)  = copy_with { it.location  = comma_separated locations }
+    def with_teams(teams)          = copy_with { it.team      = comma_separated teams }
+
+    # The same issue with these web links, space-separated. A link with whitespace in it becomes
+    # several links, as it would be read back. Empty links and repeats are dropped.
+    def with_web_links(links) = copy_with { it.web = joined links.flat_map(&:split), separator: ' ' }
+
     # Raw data methods that return the original string values
     def genres_raw_data            = @genre
     def characters_raw_data        = @character
@@ -388,9 +403,29 @@ module ComicInfo
 
     protected
 
-    attr_writer :pages, :page_count
+    attr_writer :character, :genre, :location, :page_count, :pages, :team, :web
 
     private
+
+    # A copy of the issue, changed by the block
+    def copy_with
+      copy = dup
+      yield copy
+      copy
+    end
+
+    def comma_separated values
+      cleaned = values.map { it.tr(',', ' ').split.join(' ') }
+
+      joined cleaned, separator: ', '
+    end
+
+    # The values joined, without empty values or repeats; the field's default when none are left
+    def joined values, separator:
+      kept = values.reject(&:empty?).uniq
+
+      kept.empty? ? Enums::DEFAULT_STRING : kept.join(separator)
+    end
 
     # The same issue with different page entries and page count
     def with_pages pages, page_count:
