@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `ComicInfo::Match`: one search result from a metadata source, with the source's `id` for the issue, a `heading` and `details` to pick it by, and its page on the source's site, `site_url`
+- `ComicInfo::Issue#rank(matches)`: matches ordered best first for the issue: a series named exactly as the issue's, then a cover dated in its year. Otherwise the source's order stands
+- `ComicInfo::Issue#with_blanks_filled_from(found)`: a copy of the issue with its blank fields (missing, only whitespace, or `Unknown`) filled from another, such as one a database found. Fields already set, and the pages, are kept
+- [doc/metadata-sources.md](doc/metadata-sources.md): what a metadata source answers (`name`, `home_url`, `missing_details`, `matches`, `issue`) to have a comic's details looked up in an online database
+
 ## [2.2.1] - 2026-11-26
 
 ### Fixed
