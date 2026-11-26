@@ -1,30 +1,51 @@
 RSpec.describe ComicInfo::Issue do
-  describe '.joined_list' do
-    it 'joins a list with commas' do
-      expect(described_class.joined_list(%w[Action Adventure])).to eq 'Action, Adventure'
-      expect(described_class.joined_list(['Saga'])).to eq 'Saga'
+  let(:issue) { load_fixture 'valid_minimal.xml' }
+
+  describe '#setting_genres' do
+    it 'joins the list with commas' do
+      updated = issue.setting_genres %w[Action Adventure]
+
+      expect(updated.genres_raw_data).to eq 'Action, Adventure'
+      expect(updated.genres).to eq %w[Action Adventure]
     end
 
-    it 'is nil when there is nothing to write' do
-      expect(described_class.joined_list([])).to be_nil
-      expect(described_class.joined_list(['', '  '])).to be_nil
+    it 'removes the field for an empty list' do
+      complete = load_fixture 'valid_complete.xml'
+
+      expect(complete.setting_genres([]).genres).to be_empty
+      expect(complete.setting_genres(['', '  ']).to_xml).not_to include '<Genre>'
     end
 
-    it 'trims, and drops empty values and repeats' do
-      expect(described_class.joined_list(['  Action ', '', 'Adventure', 'Action'])).to eq 'Action, Adventure'
+    it 'changes nothing else' do
+      complete = load_fixture 'valid_complete.xml'
+      restored = complete.setting_genres(complete.genres.reverse).setting_genres(complete.genres)
+
+      expect(restored.to_xml).to eq complete.to_xml
     end
 
-    it 'replaces commas inside a value' do
-      expect(described_class.joined_list(['Peter Parker, Jr.'])).to eq 'Peter Parker Jr.'
-      expect(described_class.joined_list(['a,b'])).to eq 'a b'
+    it 'leaves the issue it was called on as it was' do
+      issue.setting_genres ['Action']
+
+      expect(issue.genres).to be_empty
+    end
+  end
+
+  describe 'the other list setters' do
+    it 'set their own list' do
+      expect(issue.setting_characters(%w[Alana Marko]).characters_raw_data).to eq 'Alana, Marko'
+      expect(issue.setting_locations(%w[Landfall Wreath]).locations_raw_data).to eq 'Landfall, Wreath'
+      expect(issue.setting_teams(['The Will']).teams_raw_data).to eq 'The Will'
     end
 
-    it 'reads back as the same list' do
-      issue  = load_fixture 'valid_complete.xml'
-      joined = described_class.joined_list issue.genres
-      xml    = "<ComicInfo><Genre>#{joined}</Genre></ComicInfo>"
+    it 'trim, and drop empty values and repeats' do
+      updated = issue.setting_characters ['  Alana ', '', 'Marko', 'Alana']
 
-      expect(ComicInfo.load(xml).genres).to eq issue.genres
+      expect(updated.characters_raw_data).to eq 'Alana, Marko'
+    end
+
+    it 'replace commas inside a value' do
+      expect(issue.setting_characters(['Peter Parker, Jr.']).characters_raw_data).to eq 'Peter Parker Jr.'
+      expect(issue.setting_characters(['a,b']).characters).to eq ['a b']
     end
   end
 
@@ -45,23 +66,25 @@ RSpec.describe ComicInfo::Issue do
     end
 
     it 'is empty without a web field' do
-      expect(load_fixture('valid_minimal.xml').web_links).to be_empty
+      expect(issue.web_links).to be_empty
     end
   end
 
-  describe '.joined_web' do
+  describe '#setting_web_links' do
     it 'joins links with spaces, dropping empty values and repeats' do
       links = [' https://example.com', '', 'https://example.org', 'https://example.com']
 
-      expect(described_class.joined_web(links)).to eq 'https://example.com https://example.org'
+      expect(issue.setting_web_links(links).web).to eq 'https://example.com https://example.org'
     end
 
-    it 'is nil when there is nothing to write' do
-      expect(described_class.joined_web([])).to be_nil
+    it 'removes the field for an empty list' do
+      expect(issue.setting_web_links([]).to_xml).not_to include '<Web>'
     end
 
-    it 'splits an entry with spaces in it' do
-      expect(described_class.joined_web(['https://example.com https://example.org'])).to eq 'https://example.com https://example.org'
+    it 'splits a link with spaces in it' do
+      updated = issue.setting_web_links ['https://example.com https://example.org']
+
+      expect(updated.web_links).to eq %w[https://example.com https://example.org]
     end
   end
 end
