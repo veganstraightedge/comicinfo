@@ -187,6 +187,22 @@ updated = comic.rearranging_pages [2, 0, nil]
 updated.save 'ComicInfo.xml'
 ```
 
+### Looking Up Details in Online Databases
+
+A metadata source looks up a comic's details in an online comics database. Each database gets its own gem; see [doc/metadata-sources.md](doc/metadata-sources.md) for what a source answers and how to write one.
+
+```ruby
+missing = source.missing_details comic # what the comic needs before it can be searched for, or nil
+matches = source.matches comic         # ComicInfo::Match results, best first
+found   = source.issue matches.first   # usually a person picks
+updated = comic.with_blanks_filled_from found
+```
+
+- `ComicInfo::Match` is one search result: `id`, `heading`, `series`, and optionally `number`, `cover_date`, `title`, `details` and `site_url`.
+- `comic.rank matches` orders matches best first: a series named exactly as the comic's (ignoring case and surrounding space), then a cover dated in its year. Otherwise the source's order stands.
+- `comic.with_blanks_filled_from found` is a copy that keeps every field already set and fills the blank ones (missing, only whitespace, or `Unknown`). Pages are kept; the page count is taken only when the comic has none.
+- Show `source.name`, linked to `source.home_url`, wherever a database's data appears.
+
 ### Manga Support
 
 ```ruby
