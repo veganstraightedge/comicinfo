@@ -419,7 +419,12 @@ module ComicInfo
 
     protected
 
-    attr_writer :character, :genre, :location, :page_count, :pages, :team, :web
+    attr_writer :age_rating, :alternate_count, :alternate_number, :alternate_series, :black_and_white,
+                :character, :colorist, :community_rating, :count, :cover_artist, :day, :editor, :format,
+                :genre, :imprint, :inker, :language_iso, :letterer, :location, :main_character_or_team,
+                :manga, :month, :notes, :number, :page_count, :pages, :penciller, :publisher, :review,
+                :scan_information, :series, :series_group, :story_arc, :story_arc_number, :summary,
+                :team, :title, :translator, :volume, :web, :writer, :year
 
     private
 
