@@ -121,9 +121,9 @@ story_arc      = comic.story_arc      #=> ["Brand New Day", "Spider-Island"] (sa
 story_arc_num  = comic.story_arc_number #=> ["1", "5"] (same as story_arc_numbers)
 
 # Change a list: a copy of the issue (an empty list removes the field)
-updated = comic.setting_genres ['Action', ' Adventure', 'Action']
+updated = comic.with_genres ['Action', ' Adventure', 'Action']
 updated.genres_raw_data #=> "Action, Adventure"
-# Also setting_characters, setting_locations, setting_teams, setting_web_links
+# Also with_characters, with_locations, with_teams, with_web_links
 web_links = comic.web_links #=> ["https://marvel.com/...", "https://comicvine.com/..."]
 ```
 

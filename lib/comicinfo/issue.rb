@@ -226,14 +226,14 @@ module ComicInfo
     # The same issue with these characters, genres, locations, or teams.
     # Each value is trimmed, and empty values and repeats are dropped. A comma inside a value
     # would split it in two when read back, so it becomes a space. An empty list removes the field.
-    def setting_characters(characters) = copy_with { it.character = comma_separated characters }
-    def setting_genres(genres)         = copy_with { it.genre     = comma_separated genres }
-    def setting_locations(locations)   = copy_with { it.location  = comma_separated locations }
-    def setting_teams(teams)           = copy_with { it.team      = comma_separated teams }
+    def with_characters(characters) = copy_with { it.character = comma_separated characters }
+    def with_genres(genres)        = copy_with { it.genre     = comma_separated genres }
+    def with_locations(locations)  = copy_with { it.location  = comma_separated locations }
+    def with_teams(teams)          = copy_with { it.team      = comma_separated teams }
 
     # The same issue with these web links, space-separated. A link with whitespace in it becomes
     # several links, as it would be read back. Empty links and repeats are dropped.
-    def setting_web_links(links) = copy_with { it.web = joined links.flat_map(&:split), separator: ' ' }
+    def with_web_links(links) = copy_with { it.web = joined links.flat_map(&:split), separator: ' ' }
 
     # Raw data methods that return the original string values
     def genres_raw_data            = @genre
