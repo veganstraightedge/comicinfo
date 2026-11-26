@@ -145,6 +145,66 @@ module ComicInfo
       matches.sort_by.with_index { |match, index| [-points_for(match), index] }
     end
 
+    # The same issue with its blank fields filled in from found.
+    #
+    # Use it to add what a metadata source found to a comic's details without losing anything
+    # already there, read from the file or typed by a person:
+    #
+    #   found   = source.issue match
+    #   updated = issue.with_blanks_filled_from found
+    #
+    # - A field that is set is kept. A blank field (missing, only whitespace, or an Unknown enum
+    #   value) takes found's value.
+    # - Pages are kept as they are: a source knows nothing about this copy's page images. The page
+    #   count is taken from found only when this issue has none.
+    #
+    # Returns a copy; this issue is not changed.
+    def with_blanks_filled_from found
+      copy_with do |copy|
+        copy.age_rating             = filled_enum @age_rating, from: found.age_rating
+        copy.alternate_count        = filled_integer @alternate_count, from: found.alternate_count
+        copy.alternate_number       = filled_text @alternate_number, from: found.alternate_number
+        copy.alternate_series       = filled_text @alternate_series, from: found.alternate_series
+        copy.black_and_white        = filled_enum @black_and_white, from: found.black_and_white
+        copy.character              = filled_text @character, from: found.characters_raw_data
+        copy.colorist               = filled_text @colorist, from: found.colorist
+        copy.community_rating       = @community_rating || found.community_rating
+        copy.count                  = filled_integer @count, from: found.count
+        copy.cover_artist           = filled_text @cover_artist, from: found.cover_artist
+        copy.day                    = filled_integer @day, from: found.day
+        copy.editor                 = filled_text @editor, from: found.editor
+        copy.format                 = filled_text @format, from: found.format
+        copy.genre                  = filled_text @genre, from: found.genres_raw_data
+        copy.imprint                = filled_text @imprint, from: found.imprint
+        copy.inker                  = filled_text @inker, from: found.inker
+        copy.language_iso           = filled_text @language_iso, from: found.language_iso
+        copy.letterer               = filled_text @letterer, from: found.letterer
+        copy.location               = filled_text @location, from: found.locations_raw_data
+        copy.main_character_or_team = filled_text @main_character_or_team, from: found.main_character_or_team
+        copy.manga                  = filled_enum @manga, from: found.manga
+        copy.month                  = filled_integer @month, from: found.month
+        copy.notes                  = filled_text @notes, from: found.notes
+        copy.number                 = filled_text @number, from: found.number
+        copy.page_count             = @page_count == Enums::DEFAULT_PAGE_COUNT ? found.page_count : @page_count
+        copy.penciller              = filled_text @penciller, from: found.penciller
+        copy.publisher              = filled_text @publisher, from: found.publisher
+        copy.review                 = filled_text @review, from: found.review
+        copy.scan_information       = filled_text @scan_information, from: found.scan_information
+        copy.series                 = filled_text @series, from: found.series
+        copy.series_group           = filled_text @series_group, from: found.series_group
+        copy.story_arc              = filled_text @story_arc, from: found.story_arcs_raw_data
+        copy.story_arc_number       = filled_text @story_arc_number, from: found.story_arc_numbers_raw_data
+        copy.summary                = filled_text @summary, from: found.summary
+        copy.team                   = filled_text @team, from: found.teams_raw_data
+        copy.title                  = filled_text @title, from: found.title
+        copy.translator             = filled_text @translator, from: found.translator
+        copy.volume                 = filled_integer @volume, from: found.volume
+        copy.web                    = filled_text @web, from: found.web
+        copy.writer                 = filled_text @writer, from: found.writer
+        copy.year                   = filled_integer @year, from: found.year
+      end
+    end
+
     # The same issue after its page images were reordered, deleted, or added to.
     #
     # A <Page> entry points at its image by index, so when the images change the entries must
@@ -455,6 +515,11 @@ module ComicInfo
       copy.page_count = page_count
       copy
     end
+
+    # The value, or the one from found when the value is blank, for #with_blanks_filled_from
+    def filled_enum(value, from:)    = value == Enums::DEFAULT_ENUM_UNKNOWN ? from : value
+    def filled_integer(value, from:) = value == Enums::DEFAULT_INTEGER ? from : value
+    def filled_text(value, from:)    = value.strip.empty? ? from : value
 
     # How well a match fits this issue, for #rank
     def points_for match
